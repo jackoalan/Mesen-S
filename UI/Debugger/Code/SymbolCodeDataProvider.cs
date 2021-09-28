@@ -32,6 +32,14 @@ namespace Mesen.GUI.Debugger.Code
 		public CodeLineData GetCodeLineData(int lineIndex)
 		{
 			AddressInfo? address = _symbolProvider.GetLineAddress(_file, lineIndex);
+			if (_lineCount > 0 && lineIndex == _lineCount)
+			{
+				CodeLineData prevData = DebugApi.GetDisassemblyLineData(_cpuType, (uint) lineIndex - 1);
+				AddressInfo? prevAddress = _symbolProvider.GetLineAddress(_file, lineIndex - 1);
+				if (prevAddress.HasValue)
+					address = new AddressInfo
+						{Address = prevAddress.Value.Address + prevData.OpSize, Type = prevAddress.Value.Type};
+			}
 
 			CodeLineData data = new CodeLineData(_cpuType) {
 				Address = GetLineAddress(lineIndex),
@@ -50,7 +58,7 @@ namespace Mesen.GUI.Debugger.Code
 				data.ByteCode = byteCode;
 			}*/
 
-			string text = _file.Data[lineIndex];
+			string text = _file.Data.Length > lineIndex ? _file.Data[lineIndex] : String.Empty;
 			string trimmed = text.TrimStart();
 			data.CustomIndent = (text.Length - trimmed.Length) * 10;
 

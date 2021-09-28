@@ -294,6 +294,16 @@ extern "C" {
 	DllExport void __stdcall LoadRecentGame(char* filepath, bool resetGame) { _console->GetSaveStateManager()->LoadRecentGame(filepath, resetGame); }
 	DllExport int32_t __stdcall GetSaveStatePreview(char* saveStatePath, uint8_t* pngData) { return _console->GetSaveStateManager()->GetSaveStatePreview(saveStatePath, pngData); }
 
+	DllExport uint32_t __stdcall
+	GetDwarfInfo(GetDwarfInfoObjectCountCallback countCb,
+							 GetDwarfInfoAppendSecCallback appendSecCb,
+							 GetDwarfInfoAppendFileCallback appendFileCb,
+							 GetDwarfInfoAppendLocCallback appendLocCb,
+							 GetDwarfInfoAppendSymCallback appendSymCb) {
+		return _console->GetDwarfInfo({countCb, appendSecCb, appendFileCb, appendLocCb, appendSymCb})
+					 ? 1 : 0;
+	}
+
 	DllExport void __stdcall PgoRunTest(vector<string> testRoms, bool enableDebugger)
 	{
 		FolderUtilities::SetHomeFolder("../PGOMesenHome");

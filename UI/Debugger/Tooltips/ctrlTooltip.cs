@@ -57,6 +57,7 @@ namespace Mesen.GUI.Debugger
 				lbl.Text = kvp.Key + ":";
 				lbl.Font = new Font(lbl.Font, FontStyle.Bold);
 				lbl.AutoSize = true;
+				lbl.ForeColor = SystemColors.InfoText;
 				tlpLabels.Controls.Add(lbl, 0, i);
 
 				lbl = new ctrlAutoGrowLabel();
@@ -64,6 +65,7 @@ namespace Mesen.GUI.Debugger
 				lbl.Margin = new Padding(2);
 				lbl.Text = kvp.Value;
 				lbl.Size = new Size(500, 10);
+				lbl.ForeColor = SystemColors.InfoText;
 				tlpLabels.Controls.Add(lbl, 1, i);
 
 				i++;

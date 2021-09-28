@@ -2,6 +2,20 @@
 #include "stdafx.h"
 #include <sstream>
 
+typedef void(__cdecl *GetDwarfInfoObjectCountCallback)(uint32_t numSecs, uint32_t numFiles, uint32_t numLocs, uint32_t numSyms);
+typedef void(__cdecl *GetDwarfInfoAppendSecCallback)(const char *secName, uint32_t addr, uint32_t size);
+typedef void(__cdecl *GetDwarfInfoAppendFileCallback)(const char *filePath);
+typedef void(__cdecl *GetDwarfInfoAppendLocCallback)(uint32_t fileIdx, uint32_t line, uint32_t addr);
+typedef void(__cdecl *GetDwarfInfoAppendSymCallback)(const char *namePtr, uint32_t secIdx, uint32_t addr, uint32_t size);
+
+struct GetDwarfInfoArgs {
+	GetDwarfInfoObjectCountCallback countCb;
+	GetDwarfInfoAppendSecCallback appendSecCb;
+	GetDwarfInfoAppendFileCallback appendFileCb;
+	GetDwarfInfoAppendLocCallback appendLocCb;
+	GetDwarfInfoAppendSymCallback appendSymCb;
+};
+
 class VirtualFile
 {
 private:
@@ -38,4 +52,6 @@ public:
 	bool ReadFile(uint8_t* out, uint32_t expectedSize);
 
 	bool ApplyPatch(VirtualFile &patch);
+
+	bool GetDwarfInfo(GetDwarfInfoArgs args) const;
 };

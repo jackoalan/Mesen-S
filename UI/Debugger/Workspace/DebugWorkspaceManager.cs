@@ -125,6 +125,9 @@ namespace Mesen.GUI.Debugger.Workspace
 		public static void AutoImportSymbols()
 		{
 			if(ConfigManager.Config.Debug.DbgIntegration.AutoImport) {
+				if (TryImportDwarfInfo())
+					return;
+				
 				RomInfo romInfo = EmuApi.GetRomInfo();
 				string romName = romInfo.GetRomName();
 
@@ -186,6 +189,22 @@ namespace Mesen.GUI.Debugger.Workspace
 			LabelManager.RefreshLabels();
 
 			SymbolProviderChanged?.Invoke(_symbolProvider);
+		}
+
+		public static bool TryImportDwarfInfo()
+		{
+			EmuApi.DwarfInfo? dwarfInfo = EmuApi.GetDwarfInfo();
+			if (dwarfInfo == null)
+				return false;
+
+			_symbolProvider = new DwarfImporter(dwarfInfo.Value);
+			(_symbolProvider as DwarfImporter).Integrate();
+			SymbolProviderChanged?.Invoke(_symbolProvider);
+			LabelManager.RefreshLabels();
+
+			SymbolProviderChanged?.Invoke(_symbolProvider);
+
+			return true;
 		}
 
 		public static ISymbolProvider GetSymbolProvider()

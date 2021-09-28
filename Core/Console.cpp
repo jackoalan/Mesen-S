@@ -41,6 +41,7 @@
 #include "../Utilities/VirtualFile.h"
 #include "../Utilities/PlatformUtilities.h"
 #include "../Utilities/FolderUtilities.h"
+#include "../Utilities/ElfLoader.h"
 
 Console::Console()
 {
@@ -962,3 +963,12 @@ template void Console::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8
 template void Console::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Console::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Console::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+
+bool Console::GetDwarfInfo(GetDwarfInfoArgs args) const {
+	shared_ptr<BaseCartridge> cart = _cart;
+	if (cart) {
+		RomInfo info = cart->GetRomInfo();
+		return info.RomFile.GetDwarfInfo(args);
+	}
+	return false;
+}

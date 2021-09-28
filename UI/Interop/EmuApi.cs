@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mesen.GUI.Config;
 using Mesen.GUI.Forms;
+using Mesen.GUI.Debugger.Integration;
 
 namespace Mesen.GUI
 {
@@ -116,6 +117,122 @@ namespace Mesen.GUI
 
 		[DllImport(DllPath)] public static extern void SetCheats([In]UInt32[] cheats, UInt32 cheatCount);
 		[DllImport(DllPath)] public static extern void ClearCheats();
+
+
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		public delegate void GetDwarfInfoObjectCountCallback(UInt32 numSecs, UInt32 numFiles, UInt32 numLocs, UInt32 numSyms);
+
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		public delegate void GetDwarfInfoAppendSecCallback(IntPtr secNamePtr, UInt32 addr, UInt32 size);
+
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		public delegate void GetDwarfInfoAppendFileCallback(IntPtr filePathPtr);
+
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		public delegate void GetDwarfInfoAppendLocCallback(UInt32 fileIdx, UInt32 line, UInt32 addr);
+
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		public delegate void GetDwarfInfoAppendSymCallback(IntPtr namePtr, UInt32 secIdx, UInt32 addr, UInt32 size);
+
+		[DllImport(DllPath, EntryPoint = "GetDwarfInfo")]
+		public static extern UInt32 GetDwarfInfoWrapper(
+			GetDwarfInfoObjectCountCallback countCb,
+			GetDwarfInfoAppendSecCallback appendSecCb,
+			GetDwarfInfoAppendFileCallback appendFileCb,
+			GetDwarfInfoAppendLocCallback appendLocCb,
+			GetDwarfInfoAppendSymCallback appendSymCb);
+
+
+		public struct ElfSec
+		{
+			public string Name;
+			public int Address;
+			public int Size;
+		}
+
+		public struct ElfSymData
+		{
+			public ElfSec Section;
+			public int Size;
+		}
+		
+		public struct DwarfInfo
+		{
+			public DateTime SymbolFileStamp;
+			public string SymbolPath;
+			public List<ElfSec> Sections;
+			public List<SourceFileInfo> SourceFiles;
+			public Dictionary<int, SourceCodeLocation> LinesByCpuAddress;
+			public Dictionary<int, SourceSymbol> SymbolsByCpuAddress;
+		}
+
+		public static DwarfInfo? GetDwarfInfo()
+		{
+			List<ElfSec> secs = new List<ElfSec>();
+			List<SourceFileInfo> files = new List<SourceFileInfo>();
+			Dictionary<int, SourceCodeLocation> locs = new Dictionary<int, SourceCodeLocation>();
+			Dictionary<int, SourceSymbol> syms = new Dictionary<int, SourceSymbol>();
+
+			if (GetDwarfInfoWrapper((UInt32 numSecs, UInt32 numFiles, UInt32 numLocs, UInt32 numSyms) =>
+				{
+					secs = new List<ElfSec>((int) numSecs);
+					files = new List<SourceFileInfo>((int) numFiles);
+					locs = new Dictionary<int, SourceCodeLocation>((int) numLocs);
+					syms = new Dictionary<int, SourceSymbol>((int) numSyms);
+				},
+				(IntPtr secNamePtr, UInt32 addr, UInt32 size) =>
+				{
+					string secName = Utf8Marshaler.GetStringFromIntPtr(secNamePtr);
+					secs.Add(new ElfSec
+					{
+						Name = secName,
+						Address = (int) addr,
+						Size = (int) size
+					});
+				},
+				(IntPtr filePathPtr) =>
+				{
+					string filePath = Utf8Marshaler.GetStringFromIntPtr(filePathPtr);
+					files.Add(new SourceFileInfo
+					{
+						Name = filePath,
+						Data = File.ReadAllLines(filePath, Encoding.UTF8)
+					});
+				},
+				(UInt32 fileIdx, UInt32 line, UInt32 addr) =>
+				{
+					locs[(int) addr] = new SourceCodeLocation
+					{
+						File = files[(int) fileIdx],
+						LineNumber = Math.Max(0, (int) line - 1)
+					};
+				},
+				(IntPtr namePtr, UInt32 secIdx, UInt32 addr, UInt32 size) =>
+				{
+					syms[(int) addr] = new SourceSymbol
+					{
+						Name = Utf8Marshaler.GetStringFromIntPtr(namePtr),
+						Address = (int) addr,
+						InternalSymbol = new ElfSymData{Section = secs[(int) secIdx], Size = (int) size}
+					};
+				}) == 1)
+			{
+				string path = GetRomInfo().RomPath;
+				return new DwarfInfo
+				{
+					SymbolFileStamp = File.GetLastWriteTime(path),
+					SymbolPath = path,
+					Sections = secs,
+					SourceFiles = files,
+					LinesByCpuAddress = locs,
+					SymbolsByCpuAddress = syms
+				};
+			}
+			else
+			{
+				return null;
+			}
+		}
 	}
 
 	public struct ScreenSize

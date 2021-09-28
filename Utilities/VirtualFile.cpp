@@ -9,6 +9,7 @@
 #include "../Utilities/BpsPatcher.h"
 #include "../Utilities/IpsPatcher.h"
 #include "../Utilities/UpsPatcher.h"
+#include "../Utilities/ElfLoader.h"
 
 const std::initializer_list<string> VirtualFile::RomExtensions = { ".sfc", ".smc", ".swc", ".fig", ".bs", ".gb", ".gbc" };
 
@@ -91,10 +92,15 @@ void VirtualFile::LoadFile()
 				}
 			}
 		} else {
-			ifstream input(_path, std::ios::in | std::ios::binary);
-			if(input.good()) {
-				FromStream(input, _data);
-			}
+      ElfLoader loader(_path);
+      if (loader.IsHeaderValid()) {
+        _data = loader.ToBinary();
+      } else {
+        ifstream input(_path, std::ios::in | std::ios::binary);
+        if(input.good()) {
+          FromStream(input, _data);
+        }
+      }
 		}
 	}
 }
@@ -209,4 +215,12 @@ bool VirtualFile::ApplyPatch(VirtualFile& patch)
 		}
 	}
 	return result;
+}
+
+bool VirtualFile::GetDwarfInfo(GetDwarfInfoArgs args) const {
+	ElfLoader loader(_path);
+	if (loader.IsHeaderValid()) {
+		return loader.GetDwarfInfo(args);
+	}
+	return false;
 }
