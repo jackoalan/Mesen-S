@@ -1,3 +1,12 @@
+This is a stripped down subset of elfutils to specifically support Mesen-S'
+debugger. GNU-specific C semantics have been removed in favor of standard ones
+so it may be built with VS2019.
+
+Autotools files have been removed in favor of Mesen's makefile and VS projects.
+
+The original README follows:
+
+
 The elfutils project provides libraries and tools for ELF files and DWARF data.
 
 The project home is http://elfutils.org/
