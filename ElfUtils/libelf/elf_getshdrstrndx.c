@@ -125,7 +125,7 @@ elf_getshdrstrndx (Elf *elf, size_t *dst)
 		    }
 
 		  /* We can directly access the memory.  */
-		  num = ((Elf32_Shdr *) (elf->map_address + elf->start_offset
+		  num = ((Elf32_Shdr *) ((uint8_t*)elf->map_address + elf->start_offset
 					 + offset))->sh_link;
 		}
 	      else
@@ -190,7 +190,7 @@ elf_getshdrstrndx (Elf *elf, size_t *dst)
 		    }
 
 		  /* We can directly access the memory.  */
-		  num = ((Elf64_Shdr *) (elf->map_address + elf->start_offset
+		  num = ((Elf64_Shdr *) ((uint8_t*)elf->map_address + elf->start_offset
 					 + offset))->sh_link;
 		}
 	      else
@@ -231,5 +231,3 @@ elf_getshdrstrndx (Elf *elf, size_t *dst)
   return result;
 }
 INTDEF(elf_getshdrstrndx)
-/* Alias for the deprecated name.  */
-strong_alias (elf_getshdrstrndx, elf_getshstrndx)

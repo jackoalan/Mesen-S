@@ -189,20 +189,6 @@ typedef enum
   ELF_K_NUM
 } Elf_Kind;
 
-
-/* Archive member header.  */
-typedef struct
-{
-  char *ar_name;		/* Name of archive member.  */
-  time_t ar_date;		/* File date.  */
-  uid_t ar_uid;			/* User ID.  */
-  gid_t ar_gid;			/* Group ID.  */
-  mode_t ar_mode;		/* File mode.  */
-  int64_t ar_size;		/* File size.  */
-  char *ar_rawname;		/* Original name of archive member.  */
-} Elf_Arhdr;
-
-
 /* Archive symbol table entry.  */
 typedef struct
 {
@@ -232,14 +218,8 @@ extern Elf *elf_begin (int __fildes, Elf_Cmd __cmd, Elf *__ref);
 /* Create descriptor for memory region.  */
 extern Elf *elf_memory (char *__image, size_t __size);
 
-/* Advance archive descriptor to next element.  */
-extern Elf_Cmd elf_next (Elf *__elf);
-
 /* Free resources allocated for ELF.  */
 extern int elf_end (Elf *__elf);
-
-/* Update ELF descriptor and write file to disk.  */
-extern int64_t elf_update (Elf *__elf, Elf_Cmd __cmd);
 
 /* Determine what kind of file is associated with ELF.  */
 extern Elf_Kind elf_kind (Elf *__elf) __pure_attribute__;
@@ -433,19 +413,6 @@ extern Elf_Data *elf_getdata_rawchunk (Elf *__elf,
 
 /* Return pointer to string at OFFSET in section INDEX.  */
 extern char *elf_strptr (Elf *__elf, size_t __index, size_t __offset);
-
-
-/* Return header of archive.  */
-extern Elf_Arhdr *elf_getarhdr (Elf *__elf);
-
-/* Return offset in archive for current file ELF.  */
-extern int64_t elf_getaroff (Elf *__elf);
-
-/* Select archive element at OFFSET.  */
-extern size_t elf_rand (Elf *__elf, size_t __offset);
-
-/* Get symbol table of archive.  */
-extern Elf_Arsym *elf_getarsym (Elf *__elf, size_t *__narsyms);
 
 
 /* Control ELF descriptor.  */

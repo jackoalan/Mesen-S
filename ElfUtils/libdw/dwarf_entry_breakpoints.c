@@ -131,8 +131,11 @@ dwarf_entry_breakpoints (Dwarf_Die *die, Dwarf_Addr **bkpts)
 
   /* Most often there is a single contiguous PC range for the DIE.  */
   if (offset == 1)
-    return search_range (begin, end, true, true, lines, nlines, bkpts, &nbkpts)
-        ?: entrypc_bkpt (die, bkpts, &nbkpts);
+  {
+  	int range = search_range (begin, end, true, true, lines, nlines, bkpts, &nbkpts);
+	  return range
+		?range: entrypc_bkpt (die, bkpts, &nbkpts);
+  }
 
   Dwarf_Addr lowpc = (Dwarf_Addr) -1l;
   Dwarf_Addr highpc = (Dwarf_Addr) -1l;
@@ -155,9 +158,12 @@ dwarf_entry_breakpoints (Dwarf_Die *die, Dwarf_Addr **bkpts)
   /* If we didn't find any proper DWARF markers, then look in the
      lowest-addressed range for an ad hoc marker.  Failing that,
      fall back to just using the entrypc value.  */
-  return (nbkpts
-	  ?: (lowpc == (Dwarf_Addr) -1l ? 0
-	      : search_range (lowpc, highpc, false, true,
-	                      lines, nlines, bkpts, &nbkpts))
-	  ?: entrypc_bkpt (die, bkpts, &nbkpts));
+	if (nbkpts)
+		return nbkpts;
+	int range = lowpc == (Dwarf_Addr) -1l ? 0
+			: search_range (lowpc, highpc, false, true,
+								lines, nlines, bkpts, &nbkpts);
+	if (range)
+		return range;
+	return entrypc_bkpt (die, bkpts, &nbkpts);
 }

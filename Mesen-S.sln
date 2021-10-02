@@ -56,6 +56,36 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Libretro", "Libretro\Libret
 		{78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0} = {78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZLib", "ZLib\ZLib.vcxproj", "{662FCD1A-96D3-4170-ABB6-365FA47959F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ElfUtils", "ElfUtils", "{6EA82F75-2EB9-4762-9D28-89972E0FE233}"
+	ProjectSection(SolutionItems) = preProject
+		ElfUtils\config.h = ElfUtils\config.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeu", "ElfUtils\lib\libeu.vcxproj", "{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libdw", "ElfUtils\libdw\libdw.vcxproj", "{62F5C288-C37E-42AF-B375-969E9824DA0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libelf", "ElfUtils\libelf\libelf.vcxproj", "{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "winstubs", "winstubs", "{286E1662-7038-4853-A512-CB860E7A2D8B}"
+	ProjectSection(SolutionItems) = preProject
+		ElfUtils\winstubs\argp.h = ElfUtils\winstubs\argp.h
+		ElfUtils\winstubs\byteswap.h = ElfUtils\winstubs\byteswap.h
+		ElfUtils\winstubs\endian.h = ElfUtils\winstubs\endian.h
+		ElfUtils\winstubs\err.h = ElfUtils\winstubs\err.h
+		ElfUtils\winstubs\libintl.h = ElfUtils\winstubs\libintl.h
+		ElfUtils\winstubs\unistd.h = ElfUtils\winstubs\unistd.h
+		ElfUtils\winstubs\search.h = ElfUtils\winstubs\search.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sys", "sys", "{6CE098F1-D333-4AE2-AF02-164A63312D87}"
+	ProjectSection(SolutionItems) = preProject
+		ElfUtils\winstubs\sys\mman.h = ElfUtils\winstubs\sys\mman.h
+		ElfUtils\winstubs\sys\param.h = ElfUtils\winstubs\sys\param.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -348,9 +378,116 @@ Global
 		{4432139E-528B-44DE-961C-B37CD5E92E0E}.Release|x64.ActiveCfg = Release|x64
 		{4432139E-528B-44DE-961C-B37CD5E92E0E}.Release|x86.ActiveCfg = Release|Win32
 		{4432139E-528B-44DE-961C-B37CD5E92E0E}.Release|x86.Build.0 = Release|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Debug|x64.ActiveCfg = Debug|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Debug|x64.Build.0 = Debug|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Debug|x86.ActiveCfg = Debug|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Debug|x86.Build.0 = Debug|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Libretro|Any CPU.ActiveCfg = Libretro|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Libretro|x64.ActiveCfg = Libretro|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Libretro|x64.Build.0 = Libretro|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Libretro|x86.ActiveCfg = Libretro|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Libretro|x86.Build.0 = Libretro|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Optimize|Any CPU.ActiveCfg = PGO Optimize|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Optimize|x64.ActiveCfg = PGO Optimize|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Optimize|x64.Build.0 = PGO Optimize|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Optimize|x86.ActiveCfg = PGO Optimize|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Optimize|x86.Build.0 = PGO Optimize|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Profile|Any CPU.ActiveCfg = PGO Profile|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Profile|x64.ActiveCfg = PGO Profile|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Profile|x64.Build.0 = PGO Profile|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Profile|x86.ActiveCfg = PGO Profile|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.PGO Profile|x86.Build.0 = PGO Profile|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Release|Any CPU.ActiveCfg = Release|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Release|x64.ActiveCfg = Release|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Release|x64.Build.0 = Release|x64
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Release|x86.ActiveCfg = Release|Win32
+		{662FCD1A-96D3-4170-ABB6-365FA47959F7}.Release|x86.Build.0 = Release|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Debug|x64.ActiveCfg = Debug|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Debug|x64.Build.0 = Debug|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Debug|x86.ActiveCfg = Debug|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Debug|x86.Build.0 = Debug|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Libretro|Any CPU.ActiveCfg = Libretro|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Libretro|x64.ActiveCfg = Libretro|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Libretro|x64.Build.0 = Libretro|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Libretro|x86.ActiveCfg = Libretro|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Libretro|x86.Build.0 = Libretro|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Optimize|Any CPU.ActiveCfg = PGO Optimize|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Optimize|x64.ActiveCfg = PGO Optimize|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Optimize|x64.Build.0 = PGO Optimize|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Optimize|x86.ActiveCfg = PGO Optimize|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Optimize|x86.Build.0 = PGO Optimize|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Profile|Any CPU.ActiveCfg = PGO Profile|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Profile|x64.ActiveCfg = PGO Profile|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Profile|x64.Build.0 = PGO Profile|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Profile|x86.ActiveCfg = PGO Profile|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.PGO Profile|x86.Build.0 = PGO Profile|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Release|Any CPU.ActiveCfg = Release|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Release|x64.ActiveCfg = Release|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Release|x64.Build.0 = Release|x64
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Release|x86.ActiveCfg = Release|Win32
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1}.Release|x86.Build.0 = Release|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Debug|x64.ActiveCfg = Debug|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Debug|x64.Build.0 = Debug|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Debug|x86.ActiveCfg = Debug|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Debug|x86.Build.0 = Debug|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Libretro|Any CPU.ActiveCfg = Libretro|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Libretro|x64.ActiveCfg = Libretro|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Libretro|x64.Build.0 = Libretro|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Libretro|x86.ActiveCfg = Libretro|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Libretro|x86.Build.0 = Libretro|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Optimize|Any CPU.ActiveCfg = PGO Optimize|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Optimize|x64.ActiveCfg = PGO Optimize|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Optimize|x64.Build.0 = PGO Optimize|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Optimize|x86.ActiveCfg = PGO Optimize|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Optimize|x86.Build.0 = PGO Optimize|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Profile|Any CPU.ActiveCfg = PGO Profile|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Profile|x64.ActiveCfg = PGO Profile|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Profile|x64.Build.0 = PGO Profile|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Profile|x86.ActiveCfg = PGO Profile|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.PGO Profile|x86.Build.0 = PGO Profile|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Release|Any CPU.ActiveCfg = Release|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Release|x64.ActiveCfg = Release|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Release|x64.Build.0 = Release|x64
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Release|x86.ActiveCfg = Release|Win32
+		{62F5C288-C37E-42AF-B375-969E9824DA0C}.Release|x86.Build.0 = Release|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Debug|x64.ActiveCfg = Debug|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Debug|x64.Build.0 = Debug|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Debug|x86.ActiveCfg = Debug|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Debug|x86.Build.0 = Debug|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Libretro|Any CPU.ActiveCfg = Libretro|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Libretro|x64.ActiveCfg = Libretro|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Libretro|x64.Build.0 = Libretro|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Libretro|x86.ActiveCfg = Libretro|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Libretro|x86.Build.0 = Libretro|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Optimize|Any CPU.ActiveCfg = PGO Optimize|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Optimize|x64.ActiveCfg = PGO Optimize|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Optimize|x64.Build.0 = PGO Optimize|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Optimize|x86.ActiveCfg = PGO Optimize|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Optimize|x86.Build.0 = PGO Optimize|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Profile|Any CPU.ActiveCfg = PGO Profile|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Profile|x64.ActiveCfg = PGO Profile|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Profile|x64.Build.0 = PGO Profile|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Profile|x86.ActiveCfg = PGO Profile|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.PGO Profile|x86.Build.0 = PGO Profile|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Release|Any CPU.ActiveCfg = Release|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Release|x64.ActiveCfg = Release|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Release|x64.Build.0 = Release|x64
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Release|x86.ActiveCfg = Release|Win32
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{81EA7CF6-3F3D-495E-94A9-EC946BB331A1} = {6EA82F75-2EB9-4762-9D28-89972E0FE233}
+		{62F5C288-C37E-42AF-B375-969E9824DA0C} = {6EA82F75-2EB9-4762-9D28-89972E0FE233}
+		{69A975EB-D727-4E17-AFAD-3ED491B2C8F2} = {6EA82F75-2EB9-4762-9D28-89972E0FE233}
+		{286E1662-7038-4853-A512-CB860E7A2D8B} = {6EA82F75-2EB9-4762-9D28-89972E0FE233}
+		{6CE098F1-D333-4AE2-AF02-164A63312D87} = {286E1662-7038-4853-A512-CB860E7A2D8B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {26BA923A-ECE6-4040-8BA4-C9B43DE004B4}

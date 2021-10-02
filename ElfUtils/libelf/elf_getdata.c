@@ -221,7 +221,7 @@ __libelf_set_rawdata_wrlock (Elf_Scn *scn)
   if (elf->class == ELFCLASS32)
     {
       Elf32_Shdr *shdr
-	= scn->shdr.e32 ?: __elf32_getshdr_wrlock (scn);
+	= scn->shdr.e32 ? scn->shdr.e32 : __elf32_getshdr_wrlock (scn);
 
       if (shdr == NULL)
 	/* Something went terribly wrong.  */
@@ -236,7 +236,7 @@ __libelf_set_rawdata_wrlock (Elf_Scn *scn)
   else
     {
       Elf64_Shdr *shdr
-	= scn->shdr.e64 ?: __elf64_getshdr_wrlock (scn);
+	= scn->shdr.e64 ? scn->shdr.e64 : __elf64_getshdr_wrlock (scn);
 
       if (shdr == NULL)
 	/* Something went terribly wrong.  */
@@ -381,7 +381,7 @@ __libelf_set_rawdata_wrlock (Elf_Scn *scn)
      actual offset of the data in the file.  Given that there is always
      at least an ehdr this will only trigger for alignment values > 64
      which should be uncommon.  */
-  align = align ?: 1;
+  align = align ? align : 1;
   if (type != SHT_NOBITS && align > offset)
     {
       /* Align the offset to the next power of two. Uses algorithm from

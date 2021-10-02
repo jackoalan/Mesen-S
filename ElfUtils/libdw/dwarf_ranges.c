@@ -101,7 +101,7 @@ __libdw_read_begin_end_pair_inc (Dwarf_CU *cu, int sec_index,
 	    return -1;
 	  if (addrend - addr < 4)
 	    goto invalid;
-	  end = read_4ubyte_unaligned_inc (dbg, addr);
+	  read_4ubyte_unaligned_inc (end, dbg, addr);
 
 	  *beginp = begin;
 	  *endp = begin + end;
@@ -127,9 +127,11 @@ __libdw_read_begin_end_pair_inc (Dwarf_CU *cu, int sec_index,
 	  return -1;
 	}
 
-      bool begin_relocated = READ_AND_RELOCATE (__libdw_relocate_address,
+  	bool begin_relocated;
+      READ_AND_RELOCATE (begin_relocated, __libdw_relocate_address,
 						begin);
-      bool end_relocated = READ_AND_RELOCATE (__libdw_relocate_address,
+  	bool end_relocated;
+      READ_AND_RELOCATE (end_relocated, __libdw_relocate_address,
 					      end);
       *addrp = addr;
 
@@ -437,7 +439,7 @@ initial_offset (Dwarf_Attribute *attr, ptrdiff_t *offset)
       if (idx > max_idx)
 	goto invalid_offset;
 
-      datap = (cu->dbg->sectiondata[secidx]->d_buf
+      datap = ((uint8_t*)cu->dbg->sectiondata[secidx]->d_buf
 	       + range_base_off + (idx * offset_size));
       if (offset_size == 4)
 	start_offset = read_4ubyte_unaligned (cu->dbg, datap);
@@ -533,8 +535,8 @@ dwarf_ranges (Dwarf_Die *die, ptrdiff_t offset, Dwarf_Addr *basep,
 	return -1;
     }
 
-  readp = d->d_buf + offset;
-  readendp = d->d_buf + d->d_size;
+  readp = (uint8_t*)d->d_buf + offset;
+  readendp = (uint8_t*)d->d_buf + d->d_size;
 
   Dwarf_Addr begin;
   Dwarf_Addr end;

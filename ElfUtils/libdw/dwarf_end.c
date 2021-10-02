@@ -38,7 +38,6 @@
 #include <unistd.h>
 
 #include "libdwP.h"
-#include "cfi.h"
 
 
 static void
@@ -58,8 +57,6 @@ cu_free (void *arg)
   if(p != p->dbg->fake_loc_cu && p != p->dbg->fake_loclists_cu
      && p != p->dbg->fake_addr_cu)
     {
-      Dwarf_Abbrev_Hash_free (&p->abbrev_hash);
-
       /* Free split dwarf one way (from skeleton to split).  */
       if (p->unit_type == DW_UT_skeleton
 	  && p->split != NULL && p->split != (void *)-1)
@@ -78,12 +75,6 @@ dwarf_end (Dwarf *dwarf)
 {
   if (dwarf != NULL)
     {
-      if (dwarf->cfi != NULL)
-	/* Clean up the CFI cache.  */
-	__libdw_destroy_frame_cache (dwarf->cfi);
-
-      Dwarf_Sig8_Hash_free (&dwarf->sig8_hash);
-
       /* The search tree for the CUs.  NB: the CU data itself is
 	 allocated separately, but the abbreviation hash tables need
 	 to be handled.  */
@@ -112,7 +103,6 @@ dwarf_end (Dwarf *dwarf)
         }
       if (dwarf->mem_tails != NULL)
         free (dwarf->mem_tails);
-      pthread_rwlock_destroy (&dwarf->mem_rwl);
 
       /* Free the pubnames helper structure.  */
       free (dwarf->pubnames_sets);

@@ -104,7 +104,7 @@ union unaligned
       }									      \
   }									      \
 									      \
-  static void FName (void *dest, const void *ptr, size_t len,		      \
+  static void FName (uint8_t *dest, const uint8_t *ptr, size_t len,		      \
 		     int encode __attribute__ ((unused)))		      \
   {									      \
     size_t n = len / sizeof (TName);					      \

@@ -202,13 +202,14 @@ read_srclines (Dwarf *dbg,
       goto out;
     }
 
-  Dwarf_Word unit_length = read_4ubyte_unaligned_inc (dbg, linep);
+  Dwarf_Word unit_length;
+	read_4ubyte_unaligned_inc (unit_length, dbg, linep);
   unsigned int length = 4;
   if (unlikely (unit_length == DWARF3_LENGTH_64_BIT))
     {
       if (unlikely (linep + 8 > lineendp))
 	goto invalid_data;
-      unit_length = read_8ubyte_unaligned_inc (dbg, linep);
+      read_8ubyte_unaligned_inc (unit_length, dbg, linep);
       length = 8;
     }
 
@@ -220,7 +221,8 @@ read_srclines (Dwarf *dbg,
   /* The next element of the header is the version identifier.  */
   if ((size_t) (lineendp - linep) < 2)
     goto invalid_data;
-  uint_fast16_t version = read_2ubyte_unaligned_inc (dbg, linep);
+  uint_fast16_t version;
+	read_2ubyte_unaligned_inc (version, dbg, linep);
   if (unlikely (version < 2) || unlikely (version > 5))
     {
       __libdw_seterrno (DWARF_E_VERSION);
@@ -244,13 +246,13 @@ read_srclines (Dwarf *dbg,
     {
       if ((size_t) (lineendp - linep) < 4)
 	goto invalid_data;
-      header_length = read_4ubyte_unaligned_inc (dbg, linep);
+      read_4ubyte_unaligned_inc (header_length, dbg, linep);
     }
   else
     {
       if ((size_t) (lineendp - linep) < 8)
 	goto invalid_data;
-      header_length = read_8ubyte_unaligned_inc (dbg, linep);
+      read_8ubyte_unaligned_inc (header_length, dbg, linep);
     }
   const unsigned char *header_start = linep;
 
@@ -459,7 +461,7 @@ read_srclines (Dwarf *dbg,
      be defined with DW_LNE_define_file after the normal file list was
      read.  */
   struct filelist flstack[MAX_STACK_FILES];
-#define NEW_FILE() ({							\
+#define NEW_FILE(flout) {							\
   struct filelist *fl = (nfilelist < MAX_STACK_FILES			\
 			   ? &flstack[nfilelist]			\
 			   : malloc (sizeof (struct filelist)));	\
@@ -468,7 +470,7 @@ read_srclines (Dwarf *dbg,
   ++nfilelist;								\
   fl->next = filelist;							\
   filelist = fl;							\
-  fl; })
+  flout = fl; }
 
   /* Now read the files.  */
   if (version < 5)
@@ -477,7 +479,8 @@ read_srclines (Dwarf *dbg,
 	goto invalid_data;
       while (linep < lineendp && *linep != '\0')
 	{
-	  struct filelist *new_file = NEW_FILE ();
+	  struct filelist *new_file;
+      	NEW_FILE (new_file);
 
 	  /* First comes the file name.  */
 	  char *fname = (char *) linep;
@@ -503,7 +506,7 @@ read_srclines (Dwarf *dbg,
 	    new_file->info.name = fname;
 	  else
 	    {
-	      new_file->info.name = libdw_alloc (dbg, char, 1,
+	      libdw_alloc (new_file->info.name, dbg, char, 1,
 						 dirarray[diridx].len + 1
 						 + fnamelen + 1);
 	      char *cp = new_file->info.name;
@@ -620,7 +623,11 @@ read_srclines (Dwarf *dbg,
 	    }
 
 	  /* Yes, weird.  Looks like an off-by-one in the spec.  */
-	  struct filelist *new_file = n == 0 ? &null_file : NEW_FILE ();
+	  struct filelist *new_file;
+      	if (n == 0)
+      		new_file = &null_file;
+      	else
+      		NEW_FILE (new_file);
 
 	  /* We follow the same rules as above for DWARF < 5, even
 	     though the standard doesn't explicitly mention absolute
@@ -630,7 +637,7 @@ read_srclines (Dwarf *dbg,
 	    new_file->info.name = (char *) fname;
 	  else
 	    {
-	      new_file->info.name = libdw_alloc (dbg, char, 1,
+	      libdw_alloc (new_file->info.name, dbg, char, 1,
 						 dirarray[diridx].len + 1
 						 + fnamelen + 1);
 	      char *cp = new_file->info.name;
@@ -797,13 +804,13 @@ read_srclines (Dwarf *dbg,
 		  goto invalid_data;
 		get_uleb128 (filelength, linep, lineendp);
 
-		struct filelist *new_file = NEW_FILE ();
+		struct filelist *new_file;
+	    		NEW_FILE (new_file);
 		if (fname[0] == '/')
 		  new_file->info.name = fname;
 		else
 		  {
-		    new_file->info.name =
-		      libdw_alloc (dbg, char, 1, (dirarray[diridx].len + 1
+		      libdw_alloc (new_file->info.name, dbg, char, 1, (dirarray[diridx].len + 1
 						  + fnamelen + 1));
 		    char *cp = new_file->info.name;
 
@@ -942,7 +949,9 @@ read_srclines (Dwarf *dbg,
 		  || unlikely (lineendp - linep < 2))
 		goto invalid_data;
 
-	      state.addr += read_2ubyte_unaligned_inc (dbg, linep);
+	  	Dwarf_Word increment;
+	      read_2ubyte_unaligned_inc (increment, dbg, linep);
+	  	state.addr += increment;
 	      state.op_index = 0;
 	      break;
 
@@ -991,7 +1000,8 @@ read_srclines (Dwarf *dbg,
     }
 
   /* Put all the files in an array.  */
-  Dwarf_Files *files = libdw_alloc (dbg, Dwarf_Files,
+  Dwarf_Files *files;
+	libdw_alloc (files, dbg, Dwarf_Files,
 				    sizeof (Dwarf_Files)
 				    + nfilelist * sizeof (Dwarf_Fileinfo)
 				    + (ndirlist + 1) * sizeof (char *),
@@ -1019,13 +1029,14 @@ read_srclines (Dwarf *dbg,
 
   size_t buf_size = (sizeof (Dwarf_Lines)
 		     + (sizeof (Dwarf_Line) * state.nlinelist));
-  void *buf = libdw_alloc (dbg, Dwarf_Lines, buf_size, 1);
+  void *buf;
+	libdw_alloc (buf, dbg, Dwarf_Lines, buf_size, 1);
 
   /* First use the buffer for the pointers, and sort the entries.
      We'll write the pointers in the end of the buffer, and then
      copy into the buffer from the beginning so the overlap works.  */
   assert (sizeof (Dwarf_Line) >= sizeof (struct linelist *));
-  struct linelist **sortlines = (buf + buf_size
+  struct linelist **sortlines = (struct linelist **)((uint8_t*)buf + buf_size
 				 - sizeof (struct linelist **) * state.nlinelist);
 
   /* The list is in LIFO order and usually they come in clumps with
@@ -1117,10 +1128,11 @@ __libdw_getsrclines (Dwarf *dbg, Dwarf_Off debug_line_offset,
 					debug_line_offset, 1) != 0)
 	return -1;
 
-      const unsigned char *linep = data->d_buf + debug_line_offset;
-      const unsigned char *lineendp = data->d_buf + data->d_size;
+      const unsigned char *linep = (uint8_t*)data->d_buf + debug_line_offset;
+      const unsigned char *lineendp = (uint8_t*)data->d_buf + data->d_size;
 
-      struct files_lines_s *node = libdw_alloc (dbg, struct files_lines_s,
+      struct files_lines_s *node;
+  	libdw_alloc (node, dbg, struct files_lines_s,
 						sizeof *node, 1);
 
       if (read_srclines (dbg, linep, lineendp, comp_dir, address_size,

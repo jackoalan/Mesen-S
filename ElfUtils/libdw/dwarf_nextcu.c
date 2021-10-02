@@ -149,7 +149,8 @@ __libdw_next_unit (Dwarf *dwarf, bool v4_debug_types, Dwarf_Off off,
 	 (which is not necessarily the first DIE in the unit).
   */
 
-  uint64_t length = read_4ubyte_unaligned_inc (dwarf, bytes);
+  uint64_t length;
+	read_4ubyte_unaligned_inc (length, dwarf, bytes);
   size_t offset_size = 4;
   /* Lengths of 0xfffffff0 - 0xffffffff are escape codes.  Oxffffffff is
      used to indicate that 64-bit dwarf information is being used, the
@@ -169,13 +170,14 @@ __libdw_next_unit (Dwarf *dwarf, bool v4_debug_types, Dwarf_Off off,
       /* This is a 64-bit DWARF format.  */
       if (bytes_end - bytes < 8)
 	goto invalid;
-      length = read_8ubyte_unaligned_inc (dwarf, bytes);
+      read_8ubyte_unaligned_inc (length, dwarf, bytes);
     }
 
   /* Read the version stamp.  Always a 16-bit value.  */
   if (bytes_end - bytes < 2)
     goto invalid;
-  uint_fast16_t version = read_2ubyte_unaligned_inc (dwarf, bytes);
+  uint_fast16_t version;
+	read_2ubyte_unaligned_inc (version, dwarf, bytes);
 
   /* We keep unit_type at zero for older DWARF since we cannot
      easily guess whether it is a compile or partial unit.  */
@@ -240,7 +242,7 @@ __libdw_next_unit (Dwarf *dwarf, bool v4_debug_types, Dwarf_Off off,
 	  && (unit_type == DW_UT_skeleton || unit_type == DW_UT_split_compile
 	      || unit_type == DW_UT_type || unit_type == DW_UT_split_type)))
     {
-      sig_id = read_8ubyte_unaligned_inc (dwarf, bytes);
+      read_8ubyte_unaligned_inc (sig_id, dwarf, bytes);
 
       if ((v4_debug_types
 	   || unit_type == DW_UT_type || unit_type == DW_UT_split_type))

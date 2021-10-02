@@ -40,5 +40,5 @@ dwarf_cuoffset (Dwarf_Die *die)
 {
   return ((die == NULL || die->cu == NULL)
 	  ? (Dwarf_Off) -1l
-	  : (Dwarf_Off) (die->addr - die->cu->startp));
+	  : (Dwarf_Off) ((uint8_t*)die->addr - (uint8_t*)die->cu->startp));
 }

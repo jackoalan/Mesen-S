@@ -54,7 +54,11 @@
 
 /* gettext helper macros.  */
 #define N_(Str) Str
+#ifdef _WIN32
+#define _(Str) Str
+#else
 #define _(Str) dgettext ("elfutils", Str)
+#endif
 
 /* Compiler-specific definitions.  */
 #define strong_alias(name, aliasname) \
@@ -131,8 +135,13 @@ asm (".section predict_data, \"aw\"; .previous\n"
 # endif
 #endif
 #ifndef likely
+#ifdef _WIN32
+# define unlikely(expr) !!(expr)
+# define likely(expr) !!(expr)
+#else
 # define unlikely(expr) __builtin_expect (!!(expr), 0)
 # define likely(expr) __builtin_expect (!!(expr), 1)
+#endif
 #endif
 
 #define obstack_calloc(ob, size) \

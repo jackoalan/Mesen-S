@@ -67,7 +67,7 @@ __libdw_addrx (Dwarf_CU *cu, Dwarf_Word idx, Dwarf_Addr *addr)
     goto invalid_offset;
 
   const unsigned char *datap;
-  datap = dbg->sectiondata[IDX_debug_addr]->d_buf + addr_off + idx;
+  datap = (uint8_t*)dbg->sectiondata[IDX_debug_addr]->d_buf + addr_off + idx;
   if (address_size == 4)
     *addr = read_4ubyte_unaligned (dbg, datap);
   else

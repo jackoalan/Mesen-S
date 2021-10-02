@@ -1515,12 +1515,23 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>mkdir -p "Dependencies"
-		 
+    <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">
+mkdir "Dependencies"
+if "PGO Optimize" == "$(ConfigurationName)" (
+copy "$(SolutionDir)bin\x64\PGO Profile\MesenSCore.dll" "Dependencies\MesenSCore.x64.dll"
+)
+if NOT "PGO Optimize" == "$(ConfigurationName)" (
+copy "$(SolutionDir)bin\x64\$(ConfigurationName)\MesenSCore.dll" "Dependencies\MesenSCore.x64.dll"
+)
+copy "MesenUpdater.exe" "Dependencies\MesenUpdater.exe"
+call DependencyPacker.exe
+    </PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' != 'Windows_NT' ">
+mkdir -p "Dependencies"
 cp "$(SolutionDir)bin\x64\$(ConfigurationName)\Dependencies\libMesenSCore.x64.dll" "Dependencies\libMesenSCore.x64.dll"
 cp "MesenUpdater.exe" "Dependencies\MesenUpdater.exe"
 mono DependencyPacker.exe
-</PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

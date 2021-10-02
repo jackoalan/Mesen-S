@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{40a9524b-cb07-44b6-8b69-2ad6795399a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{b76972d4-00f8-470c-a377-ecb2d3f0f024}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="memory-access.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libdwP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libdw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="encoded-value.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dwarf_sig8_hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dwarf_abbrev_hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dwarf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cfi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="libdw_visit_scopes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libdw_form.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libdw_findcu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libdw_find_split_unit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libdw_alloc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="frame-cache.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fde.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_whatform.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_whatattr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_tag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_srclang.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_sig8_hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_siblingof.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_setalt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_ranges.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_peel_type.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_onesrcline.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_onearange.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_offdie.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_offabbrev.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_nextcu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_next_lines.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_next_cfi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_macro_param2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_macro_param1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_macro_param.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_macro_opcode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_macro_getsrcfiles.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_macro_getparamcnt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lowpc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_linesrc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lineprologueend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lineop_index.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lineno.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lineisa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lineepiloguebegin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lineendsequence.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_linediscriminator.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_linecol.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lineblock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_linebeginstatement.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_lineaddr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_line_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_highpc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_haspc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_hasform.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_haschildren.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_hasattr_integrate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_hasattr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getstring.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getsrclines.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getsrcfiles.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getsrcdirs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getsrc_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getsrc_die.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getscopevar.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getscopes_die.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getscopes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getpubnames.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getmacros.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getlocation_implicit_pointer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getlocation_die.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getlocation_attr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getlocation.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getfuncs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getelf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getcfi_elf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getcfi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getattrs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getattrcnt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getaranges.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getarangeinfo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getarange_addr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getalt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getabbrevtag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getabbrevcode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getabbrevattr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_getabbrev.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_get_units.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_func_inline.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_frame_register.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_frame_info.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_frame_cfa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_formudata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_formstring.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_formsdata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_formref_die.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_formref.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_formflag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_formblock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_formaddr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_filesrc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_error.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_entrypc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_entry_breakpoints.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_end.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_dieoffset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_diename.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_diecu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_die_addr_die.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_default_lower_bound.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_decl_line.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_decl_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_decl_column.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_cuoffset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_cu_info.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_cu_getdwarf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_cu_die.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_child.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_cfi_end.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_cfi_addrframe.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_bytesize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_bitsize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_bitoffset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_begin_elf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_begin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_attr_integrate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_attr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_arrayorder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_aggregate_size.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_addrdie.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_abbrevhaschildren.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dwarf_abbrev_hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cie.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cfi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

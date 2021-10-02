@@ -27,7 +27,7 @@
    not, see <http://www.gnu.org/licenses/>.  */
 
 static void
-elf_cvt_note (void *dest, const void *src, size_t len, int encode,
+elf_cvt_note (uint8_t *dest, const uint8_t *src, size_t len, int encode,
 	      bool nhdr8)
 {
   /* Note that the header is always the same size, but the padding
@@ -39,7 +39,7 @@ elf_cvt_note (void *dest, const void *src, size_t len, int encode,
       /* Convert the header.  */
       (1 ? Elf32_cvt_Nhdr : Elf64_cvt_Nhdr) (dest, src, sizeof (Elf32_Nhdr),
 					     encode);
-      const Elf32_Nhdr *n = encode ? src : dest;
+      const Elf32_Nhdr *n = (Elf32_Nhdr *)(encode ? src : dest);
 
       size_t note_len = sizeof *n;
 

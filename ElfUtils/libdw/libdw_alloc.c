@@ -53,12 +53,8 @@ __libdw_alloc_tail (Dwarf *dbg)
   if (thread_id == THREAD_ID_UNSET)
     thread_id = atomic_fetch_add (&next_id, 1);
 
-  pthread_rwlock_rdlock (&dbg->mem_rwl);
   if (thread_id >= dbg->mem_stacks)
     {
-      pthread_rwlock_unlock (&dbg->mem_rwl);
-      pthread_rwlock_wrlock (&dbg->mem_rwl);
-
       /* Another thread may have already reallocated. In theory using an
          atomic would be faster, but given that this only happens once per
          thread per Dwarf, some minor slowdown should be fine.  */
@@ -68,7 +64,6 @@ __libdw_alloc_tail (Dwarf *dbg)
                                     * sizeof (struct libdw_memblock *));
           if (dbg->mem_tails == NULL)
             {
-              pthread_rwlock_unlock (&dbg->mem_rwl);
               dbg->oom_handler();
             }
           for (size_t i = dbg->mem_stacks; i <= thread_id; i++)
@@ -76,9 +71,6 @@ __libdw_alloc_tail (Dwarf *dbg)
           dbg->mem_stacks = thread_id + 1;
           ANNOTATE_HAPPENS_BEFORE (&dbg->mem_tails);
         }
-
-      pthread_rwlock_unlock (&dbg->mem_rwl);
-      pthread_rwlock_rdlock (&dbg->mem_rwl);
     }
 
   /* At this point, we have an entry in the tail array.  */
@@ -89,7 +81,6 @@ __libdw_alloc_tail (Dwarf *dbg)
       result = malloc (dbg->mem_default_size);
       if (result == NULL)
 	{
-	  pthread_rwlock_unlock (&dbg->mem_rwl);
 	  dbg->oom_handler();
 	}
       result->size = dbg->mem_default_size
@@ -98,7 +89,6 @@ __libdw_alloc_tail (Dwarf *dbg)
       result->prev = NULL;
       dbg->mem_tails[thread_id] = result;
     }
-  pthread_rwlock_unlock (&dbg->mem_rwl);
   return result;
 }
 
@@ -108,9 +98,7 @@ struct libdw_memblock *
 __libdw_thread_tail (Dwarf *dbg)
 {
   struct libdw_memblock *result;
-  pthread_rwlock_rdlock (&dbg->mem_rwl);
   result = dbg->mem_tails[thread_id];
-  pthread_rwlock_unlock (&dbg->mem_rwl);
   return result;
 }
 
@@ -129,10 +117,8 @@ __libdw_allocate (Dwarf *dbg, size_t minsize, size_t align)
   newp->size = size - offsetof (struct libdw_memblock, mem);
   newp->remaining = (uintptr_t) newp + size - (result + minsize);
 
-  pthread_rwlock_rdlock (&dbg->mem_rwl);
   newp->prev = dbg->mem_tails[thread_id];
   dbg->mem_tails[thread_id] = newp;
-  pthread_rwlock_unlock (&dbg->mem_rwl);
 
   return (void *) result;
 }
@@ -148,7 +134,7 @@ dwarf_new_oom_handler (Dwarf *dbg, Dwarf_OOM handler)
 
 
 void
-__attribute ((noreturn)) attribute_hidden
+attribute_hidden
 __libdw_oom (void)
 {
   while (1)

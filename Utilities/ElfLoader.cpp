@@ -1,8 +1,9 @@
+#include "stdafx.h"
 #include "ElfLoader.h"
+#include "../ElfUtils/config.h"
 #include "../ElfUtils/libelf/gelf.h"
 #include "../ElfUtils/libelf/libelf.h"
 #include "../ElfUtils/libdw/libdw.h"
-#include "../ElfUtils/libdwelf/libdwelf.h"
 #include "../ElfUtils/lib/system.h"
 #include "../Core/MessageManager.h"
 #include "../Core/CartTypes.h"
@@ -83,7 +84,7 @@ public:
 
 		elf_version(EV_CURRENT);
 
-		_elf = dwelf_elf_begin(_fd);
+		_elf = elf_begin(_fd, ELF_C_READ_MMAP, nullptr);
 		if (_elf == nullptr) {
 			if (printErr)
 				MessageManager::Log(

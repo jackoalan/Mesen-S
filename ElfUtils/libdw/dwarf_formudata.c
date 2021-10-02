@@ -119,8 +119,8 @@ __libdw_formptr (Dwarf_Attribute *attr, int sec_index,
 	  return NULL;
       };
 
-  unsigned char *readp = d->d_buf + offset;
-  unsigned char *endp = d->d_buf + d->d_size;
+  unsigned char *readp = (uint8_t*)d->d_buf + offset;
+  unsigned char *endp = (uint8_t*)d->d_buf + d->d_size;
   if (unlikely (readp >= endp))
     {
     invalid:

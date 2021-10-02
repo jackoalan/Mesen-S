@@ -66,7 +66,7 @@ gelf_getnote (Elf_Data *data, size_t offset, GElf_Nhdr *result,
     }
   else
     {
-      const GElf_Nhdr *n = data->d_buf + offset;
+      const GElf_Nhdr *n = (void*)((uint8_t*)data->d_buf + offset);
       offset += sizeof *n;
 
       if (offset > data->d_size)

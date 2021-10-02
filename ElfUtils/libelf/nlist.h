@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 /* Get specified entries from file.  */
-extern int nlist (__const char *__filename, struct nlist *__nl);
+extern int nlist (const char *__filename, struct nlist *__nl);
 
 #ifdef __cplusplus
 }

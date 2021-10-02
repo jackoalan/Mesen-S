@@ -31,6 +31,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <config.h>
 
 extern void *xmalloc (size_t) __attribute__ ((__malloc__));
 extern void *xcalloc (size_t, size_t) __attribute__ ((__malloc__));

@@ -110,14 +110,15 @@ dwarf_getaranges (Dwarf *dbg, Dwarf_Aranges **aranges, size_t *naranges)
       if (unlikely (readp + 4 > readendp))
 	goto invalid;
 
-      Dwarf_Word length = read_4ubyte_unaligned_inc (dbg, readp);
+      Dwarf_Word length;
+  	read_4ubyte_unaligned_inc (length, dbg, readp);
       unsigned int length_bytes = 4;
       if (length == DWARF3_LENGTH_64_BIT)
 	{
 	  if (unlikely (readp + 8 > readendp))
 	    goto invalid;
 
-	  length = read_8ubyte_unaligned_inc (dbg, readp);
+	  read_8ubyte_unaligned_inc (length, dbg, readp);
 	  length_bytes = 8;
 	}
       else if (unlikely (length >= DWARF3_LENGTH_MIN_ESCAPE_CODE
@@ -127,7 +128,8 @@ dwarf_getaranges (Dwarf *dbg, Dwarf_Aranges **aranges, size_t *naranges)
       if (unlikely (readp + 2 > readendp))
 	goto invalid;
 
-      unsigned int version = read_2ubyte_unaligned_inc (dbg, readp);
+      unsigned int version;
+  	read_2ubyte_unaligned_inc (version, dbg, readp);
       if (version != 2)
 	{
 	invalid:
@@ -178,9 +180,9 @@ dwarf_getaranges (Dwarf *dbg, Dwarf_Aranges **aranges, size_t *naranges)
 	    goto invalid;
 
 	  if (address_size == 4)
-	    range_length = read_4ubyte_unaligned_inc (dbg, readp);
+	    read_4ubyte_unaligned_inc (range_length, dbg, readp)
 	  else
-	    range_length = read_8ubyte_unaligned_inc (dbg, readp);
+	    read_8ubyte_unaligned_inc (range_length, dbg, readp)
 
 	  /* Two zero values mark the end.  */
 	  if (range_address == 0 && range_length == 0)
@@ -230,7 +232,8 @@ dwarf_getaranges (Dwarf *dbg, Dwarf_Aranges **aranges, size_t *naranges)
     }
 
   /* Allocate the array for the result.  */
-  void *buf = libdw_alloc (dbg, Dwarf_Aranges,
+  void *buf;
+	libdw_alloc (buf, dbg, Dwarf_Aranges,
 			   sizeof (Dwarf_Aranges)
 			   + narangelist * sizeof (Dwarf_Arange), 1);
 
@@ -239,7 +242,7 @@ dwarf_getaranges (Dwarf *dbg, Dwarf_Aranges **aranges, size_t *naranges)
      copy into the buffer from the beginning so the overlap works.  */
   assert (sizeof (Dwarf_Arange) >= sizeof (Dwarf_Arange *));
   struct arangelist **sortaranges
-    = (buf + sizeof (Dwarf_Aranges)
+    = (struct arangelist **)((uint8_t*)buf + sizeof (Dwarf_Aranges)
        + ((sizeof (Dwarf_Arange) - sizeof sortaranges[0]) * narangelist));
 
   /* The list is in LIFO order and usually they come in clumps with

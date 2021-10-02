@@ -30,7 +30,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H       1
 
-#include <ar.h>
 #include <byteswap.h>
 #include <endian.h>
 #include <stdlib.h>
@@ -42,10 +41,6 @@ static inline Elf_Kind
 __attribute__ ((unused))
 determine_kind (void *buf, size_t len)
 {
-  /* First test for an archive.  */
-  if (len >= SARMAG && memcmp (buf, ARMAG, SARMAG) == 0)
-    return ELF_K_AR;
-
   /* Next try ELF files.  */
   if (len >= EI_NIDENT && memcmp (buf, ELFMAG, SELFMAG) == 0)
     {
@@ -98,18 +93,6 @@ __attribute__ ((unused))
 libelf_acquire_all (Elf *elf)
 {
   rwlock_wrlock (elf->lock);
-
-  if (elf->kind == ELF_K_AR)
-    {
-      Elf *child = elf->state.ar.children;
-
-      while (child != NULL)
-	{
-	  if (child->ref_count != 0)
-	    libelf_acquire_all (child);
-	  child = child->next;
-	}
-    }
 }
 
 /* Release own lock and those of the children.  */
@@ -117,18 +100,6 @@ static void
 __attribute__ ((unused))
 libelf_release_all (Elf *elf)
 {
-  if (elf->kind == ELF_K_AR)
-    {
-      Elf *child = elf->state.ar.children;
-
-      while (child != NULL)
-	{
-	  if (child->ref_count != 0)
-	    libelf_release_all (child);
-	  child = child->next;
-	}
-    }
-
   rwlock_unlock (elf->lock);
 }
 

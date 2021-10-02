@@ -71,10 +71,11 @@ get_offsets (Dwarf *dbg)
 
       /* Read the set header.  */
       int len_bytes = 4;
-      Dwarf_Off len = read_4ubyte_unaligned_inc (dbg, readp);
+      Dwarf_Off len;
+  	read_4ubyte_unaligned_inc (len, dbg, readp);
       if (len == DWARF3_LENGTH_64_BIT)
 	{
-	  len = read_8ubyte_unaligned_inc (dbg, readp);
+	  read_8ubyte_unaligned_inc (len, dbg, readp);
 	  len_bytes = 8;
 	}
       else if (unlikely (len >= DWARF3_LENGTH_MIN_ESCAPE_CODE
@@ -200,9 +201,9 @@ dwarf_getpubnames (Dwarf *dbg,
 	  if (readp + dbg->pubnames_sets[cnt].address_len > endp)
 	    goto invalid_dwarf;
 	  if (dbg->pubnames_sets[cnt].address_len == 4)
-	    gl.die_offset = read_4ubyte_unaligned_inc (dbg, readp);
+	  	read_4ubyte_unaligned_inc (gl.die_offset, dbg, readp)
 	  else
-	    gl.die_offset = read_8ubyte_unaligned_inc (dbg, readp);
+	   read_8ubyte_unaligned_inc (gl.die_offset, dbg, readp)
 
 	  /* If the offset is zero we reached the end of the set.  */
 	  if (gl.die_offset == 0)

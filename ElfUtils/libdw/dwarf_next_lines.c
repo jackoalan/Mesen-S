@@ -60,8 +60,8 @@ dwarf_next_lines (Dwarf *dbg, Dwarf_Off off,
 
   /* Read enough of the header to know where the next table is and
      whether we need to lookup the CU (version < 5).  */
-  const unsigned char *linep = lines->d_buf + off;
-  const unsigned char *lineendp = lines->d_buf + lines->d_size;
+  const unsigned char *linep = (uint8_t*)lines->d_buf + off;
+  const unsigned char *lineendp = (uint8_t*)lines->d_buf + lines->d_size;
 
   if ((size_t) (lineendp - linep) < 4)
     {
@@ -71,12 +71,13 @@ dwarf_next_lines (Dwarf *dbg, Dwarf_Off off,
     }
 
   *next_off = off + 4;
-  Dwarf_Word unit_length = read_4ubyte_unaligned_inc (dbg, linep);
+  Dwarf_Word unit_length;
+	read_4ubyte_unaligned_inc (unit_length, dbg, linep);
   if (unit_length == DWARF3_LENGTH_64_BIT)
     {
       if ((size_t) (lineendp - linep) < 8)
 	goto invalid_data;
-      unit_length = read_8ubyte_unaligned_inc (dbg, linep);
+      read_8ubyte_unaligned_inc (unit_length, dbg, linep);
       *next_off += 8;
     }
 
@@ -88,7 +89,8 @@ dwarf_next_lines (Dwarf *dbg, Dwarf_Off off,
 
   if ((size_t) (lineendp - linep) < 2)
     goto invalid_data;
-  uint_fast16_t version = read_2ubyte_unaligned_inc (dbg, linep);
+  uint_fast16_t version;
+	read_2ubyte_unaligned_inc (version, dbg, linep);
 
   Dwarf_Die cudie;
   if (version < 5)

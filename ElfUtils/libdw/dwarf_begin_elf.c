@@ -110,7 +110,6 @@ check_section (Dwarf *result, size_t shstrndx, Elf_Scn *scn, bool inscngrp)
       /* The section name must be valid.  Otherwise is the ELF file
 	 invalid.  */
     err:
-      Dwarf_Sig8_Hash_free (&result->sig8_hash);
       __libdw_seterrno (DWARF_E_INVALID_ELF);
       free (result);
       return NULL;
@@ -185,26 +184,6 @@ check_section (Dwarf *result, size_t shstrndx, Elf_Scn *scn, bool inscngrp)
 }
 
 
-/* Helper function to set debugdir field.  We want to cache the dir
-   where we found this Dwarf ELF file to locate alt and dwo files.  */
-char *
-__libdw_debugdir (int fd)
-{
-  /* strlen ("/proc/self/fd/") = 14 + strlen (<MAXINT>) = 10 + 1 = 25.  */
-  char devfdpath[25];
-  sprintf (devfdpath, "/proc/self/fd/%u", fd);
-  char *fdpath = realpath (devfdpath, NULL);
-  char *fddir;
-  if (fdpath != NULL && fdpath[0] == '/'
-      && (fddir = strrchr (fdpath, '/')) != NULL)
-    {
-      *++fddir = '\0';
-      return fdpath;
-    }
-  return NULL;
-}
-
-
 /* Check whether all the necessary DWARF information is available.  */
 static Dwarf *
 valid_p (Dwarf *result)
@@ -218,7 +197,6 @@ valid_p (Dwarf *result)
 		   && result->sectiondata[IDX_debug_line] == NULL
 		   && result->sectiondata[IDX_debug_frame] == NULL))
     {
-      Dwarf_Sig8_Hash_free (&result->sig8_hash);
       __libdw_seterrno (DWARF_E_NO_DWARF);
       free (result);
       result = NULL;
@@ -232,7 +210,6 @@ valid_p (Dwarf *result)
       GElf_Ehdr ehdr;
       if (gelf_getehdr (result->elf, &ehdr) == NULL)
 	{
-	  Dwarf_Sig8_Hash_free (&result->sig8_hash);
 	  __libdw_seterrno (DWARF_E_INVALID_ELF);
 	  free (result);
 	  result = NULL;
@@ -249,7 +226,6 @@ valid_p (Dwarf *result)
       result->fake_loc_cu = malloc (sizeof (Dwarf_CU));
       if (unlikely (result->fake_loc_cu == NULL))
 	{
-	  Dwarf_Sig8_Hash_free (&result->sig8_hash);
 	  __libdw_seterrno (DWARF_E_NOMEM);
 	  free (result);
 	  result = NULL;
@@ -261,7 +237,7 @@ valid_p (Dwarf *result)
 	  result->fake_loc_cu->startp
 	    = result->sectiondata[IDX_debug_loc]->d_buf;
 	  result->fake_loc_cu->endp
-	    = (result->sectiondata[IDX_debug_loc]->d_buf
+	    = ((uint8_t*)result->sectiondata[IDX_debug_loc]->d_buf
 	       + result->sectiondata[IDX_debug_loc]->d_size);
 	  result->fake_loc_cu->locs = NULL;
 	  result->fake_loc_cu->address_size = elf_addr_size;
@@ -276,7 +252,6 @@ valid_p (Dwarf *result)
       result->fake_loclists_cu = malloc (sizeof (Dwarf_CU));
       if (unlikely (result->fake_loclists_cu == NULL))
 	{
-	  Dwarf_Sig8_Hash_free (&result->sig8_hash);
 	  __libdw_seterrno (DWARF_E_NOMEM);
 	  free (result->fake_loc_cu);
 	  free (result);
@@ -289,7 +264,7 @@ valid_p (Dwarf *result)
 	  result->fake_loclists_cu->startp
 	    = result->sectiondata[IDX_debug_loclists]->d_buf;
 	  result->fake_loclists_cu->endp
-	    = (result->sectiondata[IDX_debug_loclists]->d_buf
+	    = ((uint8_t*)result->sectiondata[IDX_debug_loclists]->d_buf
 	       + result->sectiondata[IDX_debug_loclists]->d_size);
 	  result->fake_loclists_cu->locs = NULL;
 	  result->fake_loclists_cu->address_size = elf_addr_size;
@@ -308,7 +283,6 @@ valid_p (Dwarf *result)
       result->fake_addr_cu = malloc (sizeof (Dwarf_CU));
       if (unlikely (result->fake_addr_cu == NULL))
 	{
-	  Dwarf_Sig8_Hash_free (&result->sig8_hash);
 	  __libdw_seterrno (DWARF_E_NOMEM);
 	  free (result->fake_loc_cu);
 	  free (result->fake_loclists_cu);
@@ -322,7 +296,7 @@ valid_p (Dwarf *result)
 	  result->fake_addr_cu->startp
 	    = result->sectiondata[IDX_debug_addr]->d_buf;
 	  result->fake_addr_cu->endp
-	    = (result->sectiondata[IDX_debug_addr]->d_buf
+	    = ((uint8_t*)result->sectiondata[IDX_debug_addr]->d_buf
 	       + result->sectiondata[IDX_debug_addr]->d_size);
 	  result->fake_addr_cu->locs = NULL;
 	  result->fake_addr_cu->address_size = elf_addr_size;
@@ -333,7 +307,7 @@ valid_p (Dwarf *result)
     }
 
   if (result != NULL)
-    result->debugdir = __libdw_debugdir (result->elf->fildes);
+    result->debugdir = NULL;
 
   return result;
 }
@@ -358,7 +332,6 @@ scngrp_read (Dwarf *result, Elf *elf, size_t shstrndx, Elf_Scn *scngrp)
   GElf_Shdr *shdr = gelf_getshdr (scngrp, &shdr_mem);
   if (shdr == NULL)
     {
-      Dwarf_Sig8_Hash_free (&result->sig8_hash);
       __libdw_seterrno (DWARF_E_INVALID_ELF);
       free (result);
       return NULL;
@@ -367,7 +340,6 @@ scngrp_read (Dwarf *result, Elf *elf, size_t shstrndx, Elf_Scn *scngrp)
   if ((shdr->sh_flags & SHF_COMPRESSED) != 0
       && elf_compress (scngrp, 0, 0) < 0)
     {
-      Dwarf_Sig8_Hash_free (&result->sig8_hash);
       __libdw_seterrno (DWARF_E_COMPRESSED_ERROR);
       free (result);
       return NULL;
@@ -379,7 +351,6 @@ scngrp_read (Dwarf *result, Elf *elf, size_t shstrndx, Elf_Scn *scngrp)
   if (data == NULL)
     {
       /* We cannot read the section content.  Fail!  */
-      Dwarf_Sig8_Hash_free (&result->sig8_hash);
       free (result);
       return NULL;
     }
@@ -395,7 +366,6 @@ scngrp_read (Dwarf *result, Elf *elf, size_t shstrndx, Elf_Scn *scngrp)
 	{
 	  /* A section group refers to a non-existing section.  Should
 	     never happen.  */
-	  Dwarf_Sig8_Hash_free (&result->sig8_hash);
 	  __libdw_seterrno (DWARF_E_INVALID_ELF);
 	  free (result);
 	  return NULL;
@@ -431,13 +401,12 @@ dwarf_begin_elf (Elf *elf, Dwarf_Cmd cmd, Elf_Scn *scngrp)
 
 
   /* Default memory allocation size.  */
-  size_t mem_default_size = sysconf (_SC_PAGESIZE) - 4 * sizeof (void *);
+  size_t mem_default_size = get_pagesize() - 4 * sizeof (void *);
   assert (sizeof (struct Dwarf) < mem_default_size);
 
   /* Allocate the data structure.  */
   Dwarf *result = calloc (1, sizeof (Dwarf));
-  if (unlikely (result == NULL)
-      || unlikely (Dwarf_Sig8_Hash_init (&result->sig8_hash, 11) < 0))
+  if (unlikely (result == NULL))
     {
       free (result);
       __libdw_seterrno (DWARF_E_NOMEM);
@@ -456,12 +425,6 @@ dwarf_begin_elf (Elf *elf, Dwarf_Cmd cmd, Elf_Scn *scngrp)
      actual allocation.  */
   result->mem_default_size = mem_default_size;
   result->oom_handler = __libdw_oom;
-  if (pthread_rwlock_init(&result->mem_rwl, NULL) != 0)
-    {
-      free (result);
-      __libdw_seterrno (DWARF_E_NOMEM); /* no memory.  */
-      return NULL;
-    }
   result->mem_stacks = 0;
   result->mem_tails = NULL;
 
@@ -472,7 +435,6 @@ dwarf_begin_elf (Elf *elf, Dwarf_Cmd cmd, Elf_Scn *scngrp)
       size_t shstrndx;
       if (elf_getshdrstrndx (elf, &shstrndx) != 0)
 	{
-	  Dwarf_Sig8_Hash_free (&result->sig8_hash);
 	  __libdw_seterrno (DWARF_E_INVALID_ELF);
 	  free (result);
 	  return NULL;
@@ -490,13 +452,11 @@ dwarf_begin_elf (Elf *elf, Dwarf_Cmd cmd, Elf_Scn *scngrp)
     }
   else if (cmd == DWARF_C_WRITE)
     {
-      Dwarf_Sig8_Hash_free (&result->sig8_hash);
       __libdw_seterrno (DWARF_E_UNIMPL);
       free (result);
       return NULL;
     }
 
-  Dwarf_Sig8_Hash_free (&result->sig8_hash);
   __libdw_seterrno (DWARF_E_INVALID_CMD);
   free (result);
   return NULL;

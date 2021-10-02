@@ -30,7 +30,6 @@
 #ifndef _LIBELFP_H
 #define _LIBELFP_H 1
 
-#include <ar.h>
 #include <gelf.h>
 
 #include <errno.h>
@@ -380,24 +379,6 @@ struct Elf
       /* The section array.  */
       Elf_ScnList scns;
     } elf64;
-
-    struct
-    {
-      Elf *children;		/* List of all descriptors for this archive. */
-      Elf_Arsym *ar_sym;	/* Symbol table returned by elf_getarsym.  */
-      size_t ar_sym_num;	/* Number of entries in `ar_sym'.  */
-      char *long_names;		/* If no index is available but long names
-				   are used this elements points to the data.*/
-      size_t long_names_len;	/* Length of the long name table.  */
-      int64_t offset;		/* Offset in file we are currently at.
-				   elf_next() advances this to the next
-				   member of the archive.  */
-      Elf_Arhdr elf_ar_hdr;	/* Structure returned by 'elf_getarhdr'.  */
-      struct ar_hdr ar_hdr;	/* Header read from file.  */
-      char ar_name[16];		/* NUL terminated ar_name of elf_ar_hdr.  */
-      char raw_name[17];	/* This is a buffer for the NUL terminated
-				   named raw_name used in the elf_ar_hdr.  */
-    } ar;
   } state;
 
   /* There absolutely never must be anything following the union.  */
@@ -431,7 +412,7 @@ extern unsigned int __libelf_version attribute_hidden;
 extern const uint_fast8_t __libelf_type_aligns[ELFCLASSNUM - 1][ELF_T_NUM]
   attribute_hidden;
 # define __libelf_type_align(class, type)	\
-    (__libelf_type_aligns[class - 1][type] ?: 1)
+    (__libelf_type_aligns[class - 1][type] ? __libelf_type_aligns[class - 1][type] : 1)
 
 /* Given an GElf_Ehdr handle and a section type returns the Elf_Data d_type.
    Should not be called when SHF_COMPRESSED is set, the d_type should
@@ -449,9 +430,6 @@ extern Elf *__libelf_read_mmaped_file (int fildes, void *map_address,
 
 /* Set error value.  */
 extern void __libelf_seterrno (int value) internal_function;
-
-/* Get the next archive header.  */
-extern int __libelf_next_arhdr_wrlock (Elf *elf) internal_function;
 
 /* Read all of the file associated with the descriptor.  */
 extern char *__libelf_readall (Elf *elf) internal_function;
@@ -589,10 +567,10 @@ extern void __libelf_reset_rawdata (Elf_Scn *scn, void *buf, size_t size,
 
 /* We often have to update a flag iff a value changed.  Make this
    convenient.  */
-#define update_if_changed(var, exp, flag) \
+#define update_if_changed(vartype, var, exptype, exp, flag) \
   do {									      \
-    __typeof__ (var) *_var = &(var);					      \
-    __typeof__ (exp) _exp = (exp);					      \
+    vartype *_var = &(var);					      \
+    exptype _exp = (exp);					      \
     if (*_var != _exp)							      \
       {									      \
 	*_var = _exp;							      \
@@ -603,10 +581,10 @@ extern void __libelf_reset_rawdata (Elf_Scn *scn, void *buf, size_t size,
 /* Align offset to 4 bytes as needed for note name and descriptor data.
    This is almost always used, except for GNU Property notes, which use
    8 byte padding...  */
-#define NOTE_ALIGN4(n)	(((n) + 3) & -4U)
+#define NOTE_ALIGN4(n)	(((n) + 3) & ~3)
 
 /* Special note padding rule for GNU Property notes.  */
-#define NOTE_ALIGN8(n)	(((n) + 7) & -8U)
+#define NOTE_ALIGN8(n)	(((n) + 7) & ~7)
 
 /* Convenience macro.  */
 #define INVALID_NDX(ndx, type, data) \

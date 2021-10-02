@@ -37,6 +37,13 @@
 
 unsigned int error_message_count = 0;
 
+#ifdef _WIN32
+#define verr(status, format, argp) vfprintf(stderr, format, argp)
+#define verrx(status, format, argp) vfprintf(stderr, format, argp)
+#define vwarn(format, argp) vfprintf(stderr, format, argp)
+#define vwarnx(format, argp) vfprintf(stderr, format, argp)
+#endif
+
 void error(int status, int errnum, const char *format, ...) {
   va_list argp;
   int saved_errno = errno;

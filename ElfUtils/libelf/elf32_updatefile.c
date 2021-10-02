@@ -150,8 +150,8 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 	  (*fctp) ((char *) elf->map_address + elf->start_offset, ehdr,
 		   sizeof (ElfW2(LIBELFBITS,Ehdr)), 1);
 	}
-      else if (elf->map_address + elf->start_offset != ehdr)
-	memcpy (elf->map_address + elf->start_offset, ehdr,
+      else if ((void*)((uint8_t*)elf->map_address + elf->start_offset) != ehdr)
+	memcpy ((void*)((uint8_t*)elf->map_address + elf->start_offset), ehdr,
 		sizeof (ElfW2(LIBELFBITS,Ehdr)));
 
       elf->state.ELFW(elf,LIBELFBITS).ehdr_flags &= ~ELF_F_DIRTY;
@@ -178,7 +178,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
       /* Maybe the user wants a gap between the ELF header and the program
 	 header.  */
       if (ehdr->e_phoff > ehdr->e_ehsize)
-	memset (elf->map_address + elf->start_offset + ehdr->e_ehsize,
+	memset ((void*)((uint8_t*)elf->map_address + elf->start_offset + ehdr->e_ehsize),
 		__libelf_fill_byte, ehdr->e_phoff - ehdr->e_ehsize);
 
       if (unlikely (change_bo))
@@ -188,12 +188,12 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 #define fctp __elf_xfctstom[ELFW(ELFCLASS, LIBELFBITS) - 1][ELF_T_PHDR]
 
 	  /* Do the real work.  */
-	  (*fctp) (elf->map_address + elf->start_offset + ehdr->e_phoff,
+	  (*fctp) ((void*)((uint8_t*)elf->map_address + elf->start_offset + ehdr->e_phoff),
 		   elf->state.ELFW(elf,LIBELFBITS).phdr,
 		   sizeof (ElfW2(LIBELFBITS,Phdr)) * phnum, 1);
 	}
       else
-	memmove (elf->map_address + elf->start_offset + ehdr->e_phoff,
+	memmove ((void*)((uint8_t*)elf->map_address + elf->start_offset + ehdr->e_phoff),
 		elf->state.ELFW(elf,LIBELFBITS).phdr,
 		sizeof (ElfW2(LIBELFBITS,Phdr)) * phnum);
 
@@ -477,7 +477,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 
   /* Make sure the content hits the disk.  */
   char *msync_start = ((char *) elf->map_address
-		       + (elf->start_offset & ~(sysconf (_SC_PAGESIZE) - 1)));
+		       + (elf->start_offset & ~(get_pagesize() - 1)));
   char *msync_end = ((char *) elf->map_address
 		     + elf->start_offset + ehdr->e_shoff
 		     + ehdr->e_shentsize * shnum);

@@ -57,7 +57,7 @@ gelf_getshdr (Elf_Scn *scn, GElf_Shdr *dst)
     {
       /* Copy the elements one-by-one.  */
       Elf32_Shdr *shdr
-	= scn->shdr.e32 ?: __elf32_getshdr_rdlock (scn);
+	= scn->shdr.e32 ? scn->shdr.e32 : __elf32_getshdr_rdlock (scn);
 
       if (shdr == NULL)
 	{
@@ -83,7 +83,7 @@ gelf_getshdr (Elf_Scn *scn, GElf_Shdr *dst)
   else
     {
       Elf64_Shdr *shdr
-	= scn->shdr.e64 ?: __elf64_getshdr_rdlock (scn);
+	= scn->shdr.e64 ? scn->shdr.e64 : __elf64_getshdr_rdlock (scn);
 
       if (shdr == NULL)
 	{

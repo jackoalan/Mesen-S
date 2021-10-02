@@ -164,7 +164,7 @@ dwarf_formstring (Dwarf_Attribute *attrp)
       if (idx > max_idx)
 	goto invalid_offset;
 
-      datap = (dbg->sectiondata[IDX_debug_str_offsets]->d_buf
+      datap = ((uint8_t*)dbg->sectiondata[IDX_debug_str_offsets]->d_buf
 	       + str_off + (idx * offset_size));
       if (offset_size == 4)
 	off = read_4ubyte_unaligned (dbg, datap);

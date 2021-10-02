@@ -46,30 +46,6 @@
 #include "libelfP.h"
 #include "common.h"
 
-
-/* Create descriptor for archive in memory.  */
-static inline Elf *
-file_read_ar (int fildes, void *map_address, off_t offset, size_t maxsize,
-	      Elf_Cmd cmd, Elf *parent)
-{
-  Elf *elf;
-
-  /* Create a descriptor.  */
-  elf = allocate_elf (fildes, map_address, offset, maxsize, cmd, parent,
-                      ELF_K_AR, 0);
-  if (elf != NULL)
-    {
-      /* We don't read all the symbol tables in advance.  All this will
-	 happen on demand.  */
-      elf->state.ar.offset = offset + SARMAG;
-
-      elf->state.ar.elf_ar_hdr.ar_rawname = elf->state.ar.raw_name;
-    }
-
-  return elf;
-}
-
-
 static size_t
 get_shnum (void *map_address, unsigned char *e_ident, int fildes,
 	   int64_t offset, size_t maxsize)
@@ -315,7 +291,7 @@ file_read_elf (int fildes, void *map_address, unsigned char *e_ident,
 
   /* We can now allocate the memory.  Even if there are no section headers,
      we allocate space for a zeroth section in case we need it later.  */
-  const size_t scnmax = (scncnt ?: (cmd == ELF_C_RDWR || cmd == ELF_C_RDWR_MMAP)
+  const size_t scnmax = (scncnt ? scncnt : (cmd == ELF_C_RDWR || cmd == ELF_C_RDWR_MMAP)
 			 ? 1 : 0);
   Elf *elf = allocate_elf (fildes, map_address, offset, maxsize, cmd, parent,
 			   ELF_K_ELF, scnmax * sizeof (Elf_Scn));
@@ -559,9 +535,6 @@ __libelf_read_mmaped_file (int fildes, void *map_address,  int64_t offset,
       return file_read_elf (fildes, map_address, e_ident, offset, maxsize,
 			    cmd, parent);
 
-    case ELF_K_AR:
-      return file_read_ar (fildes, map_address, offset, maxsize, cmd, parent);
-
     default:
       break;
     }
@@ -591,12 +564,12 @@ read_unmmaped_file (int fildes, int64_t offset, size_t maxsize, Elf_Cmd cmd,
   union
   {
     Elf64_Ehdr ehdr;
-    unsigned char header[MAX (sizeof (Elf64_Ehdr), SARMAG)];
+    unsigned char header[sizeof (Elf64_Ehdr)];
   } mem;
 
   /* Read the head of the file.  */
   ssize_t nread = pread_retry (fildes, mem.header,
-			       MIN (MAX (sizeof (Elf64_Ehdr), SARMAG),
+			       MIN (sizeof (Elf64_Ehdr),
 				    maxsize),
 			       offset);
   if (unlikely (nread == -1))
@@ -612,9 +585,6 @@ read_unmmaped_file (int fildes, int64_t offset, size_t maxsize, Elf_Cmd cmd,
 
   switch (kind)
     {
-    case ELF_K_AR:
-      return file_read_ar (fildes, NULL, offset, maxsize, cmd, parent);
-
     case ELF_K_ELF:
       /* Make sure at least the ELF header is contained in the file.  */
       if ((size_t) nread >= (mem.header[EI_CLASS] == ELFCLASS32
@@ -714,306 +684,12 @@ read_file (int fildes, int64_t offset, size_t maxsize,
 }
 
 
-/* Find the entry with the long names for the content of this archive.  */
-static const char *
-read_long_names (Elf *elf)
-{
-  off_t offset = SARMAG;	/* This is the first entry.  */
-  struct ar_hdr hdrm;
-  struct ar_hdr *hdr;
-  char *newp;
-  size_t len;
-
-  while (1)
-    {
-      if (elf->map_address != NULL)
-	{
-	  if ((size_t) offset > elf->maximum_size
-	      || elf->maximum_size - offset < sizeof (struct ar_hdr))
-	    return NULL;
-
-	  /* The data is mapped.  */
-	  hdr = (struct ar_hdr *) (elf->map_address + offset);
-	}
-      else
-	{
-	  /* Read the header from the file.  */
-	  if (unlikely (pread_retry (elf->fildes, &hdrm, sizeof (hdrm),
-				     elf->start_offset + offset)
-			!= sizeof (hdrm)))
-	    return NULL;
-
-	  hdr = &hdrm;
-	}
-
-      /* The ar_size is given as a fixed size decimal string, right
-	 padded with spaces.  Make sure we read it properly even if
-	 there is no terminating space.  */
-      char buf[sizeof (hdr->ar_size) + 1];
-      const char *string = hdr->ar_size;
-      if (hdr->ar_size[sizeof (hdr->ar_size) - 1] != ' ')
-	{
-	  *((char *) mempcpy (buf, hdr->ar_size, sizeof (hdr->ar_size))) = '\0';
-	  string = buf;
-	}
-      len = atol (string);
-
-      if (memcmp (hdr->ar_name, "//              ", 16) == 0)
-	break;
-
-      offset += sizeof (struct ar_hdr) + ((len + 1) & ~1l);
-    }
-
-  /* Sanity check len early if we can.  */
-  if (elf->map_address != NULL)
-    {
-      if (len > elf->maximum_size - offset - sizeof (struct ar_hdr))
-	return NULL;
-    }
-
-  /* Due to the stupid format of the long name table entry (which are not
-     NUL terminted) we have to provide an appropriate representation anyhow.
-     Therefore we always make a copy which has the appropriate form.  */
-  newp = malloc (len);
-  if (newp != NULL)
-    {
-      char *runp;
-
-      if (elf->map_address != NULL)
-	{
-	  /* Simply copy it over.  */
-	  elf->state.ar.long_names = (char *) memcpy (newp,
-						      elf->map_address + offset
-						      + sizeof (struct ar_hdr),
-						      len);
-	}
-      else
-	{
-	  if (unlikely ((size_t) pread_retry (elf->fildes, newp, len,
-					      elf->start_offset + offset
-					      + sizeof (struct ar_hdr))
-			!= len))
-	    {
-	      /* We were not able to read all data.  */
-	      free (newp);
-	      elf->state.ar.long_names = NULL;
-	      return NULL;
-	    }
-	  elf->state.ar.long_names = newp;
-	}
-
-      elf->state.ar.long_names_len = len;
-
-      /* Now NUL-terminate the strings.  */
-      runp = newp;
-      while (1)
-        {
-	  char *startp = runp;
-	  runp = (char *) memchr (runp, '/', newp + len - runp);
-	  if (runp == NULL)
-	    {
-	      /* This was the last entry.  Clear any left overs.  */
-	      memset (startp, '\0', newp + len - startp);
-	      break;
-	    }
-
-	  /* NUL-terminate the string.  */
-	  *runp++ = '\0';
-
-	  /* A sanity check.  Somebody might have generated invalid
-	     archive.  */
-	  if (runp >= newp + len)
-	    break;
-	}
-    }
-
-  return newp;
-}
-
-
-/* Read the next archive header.  */
-int
-internal_function
-__libelf_next_arhdr_wrlock (Elf *elf)
-{
-  struct ar_hdr *ar_hdr;
-  Elf_Arhdr *elf_ar_hdr;
-
-  if (elf->map_address != NULL)
-    {
-      /* See whether this entry is in the file.  */
-      if (unlikely ((size_t) elf->state.ar.offset
-		    > elf->start_offset + elf->maximum_size
-		    || (elf->start_offset + elf->maximum_size
-			- elf->state.ar.offset) < sizeof (struct ar_hdr)))
-	{
-	  /* This record is not anymore in the file.  */
-	  __libelf_seterrno (ELF_E_RANGE);
-	  return -1;
-	}
-      ar_hdr = (struct ar_hdr *) (elf->map_address + elf->state.ar.offset);
-    }
-  else
-    {
-      ar_hdr = &elf->state.ar.ar_hdr;
-
-      if (unlikely (pread_retry (elf->fildes, ar_hdr, sizeof (struct ar_hdr),
-				 elf->state.ar.offset)
-		    != sizeof (struct ar_hdr)))
-	{
-	  /* Something went wrong while reading the file.  */
-	  __libelf_seterrno (ELF_E_RANGE);
-	  return -1;
-	}
-    }
-
-  /* One little consistency check.  */
-  if (unlikely (memcmp (ar_hdr->ar_fmag, ARFMAG, 2) != 0))
-    {
-      /* This is no valid archive.  */
-      __libelf_seterrno (ELF_E_ARCHIVE_FMAG);
-      return -1;
-    }
-
-  /* Copy the raw name over to a NUL terminated buffer.  */
-  *((char *) mempcpy (elf->state.ar.raw_name, ar_hdr->ar_name, 16)) = '\0';
-
-  elf_ar_hdr = &elf->state.ar.elf_ar_hdr;
-
-  /* Now convert the `struct ar_hdr' into `Elf_Arhdr'.
-     Determine whether this is a special entry.  */
-  if (ar_hdr->ar_name[0] == '/')
-    {
-      if (ar_hdr->ar_name[1] == ' '
-	  && memcmp (ar_hdr->ar_name, "/               ", 16) == 0)
-	/* This is the index.  */
-	elf_ar_hdr->ar_name = memcpy (elf->state.ar.ar_name, "/", 2);
-      else if (ar_hdr->ar_name[1] == 'S'
-	       && memcmp (ar_hdr->ar_name, "/SYM64/         ", 16) == 0)
-	/* 64-bit index.  */
-	elf_ar_hdr->ar_name = memcpy (elf->state.ar.ar_name, "/SYM64/", 8);
-      else if (ar_hdr->ar_name[1] == '/'
-	       && memcmp (ar_hdr->ar_name, "//              ", 16) == 0)
-	/* This is the array with the long names.  */
-	elf_ar_hdr->ar_name = memcpy (elf->state.ar.ar_name, "//", 3);
-      else if (likely  (isdigit (ar_hdr->ar_name[1])))
-	{
-	  size_t offset;
-
-	  /* This is a long name.  First we have to read the long name
-	     table, if this hasn't happened already.  */
-	  if (unlikely (elf->state.ar.long_names == NULL
-			&& read_long_names (elf) == NULL))
-	    {
-	      /* No long name table although it is reference.  The archive is
-		 broken.  */
-	      __libelf_seterrno (ELF_E_INVALID_ARCHIVE);
-	      return -1;
-	    }
-
-	  offset = atol (ar_hdr->ar_name + 1);
-	  if (unlikely (offset >= elf->state.ar.long_names_len))
-	    {
-	      /* The index in the long name table is larger than the table.  */
-	      __libelf_seterrno (ELF_E_INVALID_ARCHIVE);
-	      return -1;
-	    }
-	  elf_ar_hdr->ar_name = elf->state.ar.long_names + offset;
-	}
-      else
-	{
-	  /* This is none of the known special entries.  */
-	  __libelf_seterrno (ELF_E_INVALID_ARCHIVE);
-	  return -1;
-	}
-    }
-  else
-    {
-      char *endp;
-
-      /* It is a normal entry.  Copy over the name.  */
-      endp = (char *) memccpy (elf->state.ar.ar_name, ar_hdr->ar_name,
-			       '/', 16);
-      if (endp != NULL)
-	endp[-1] = '\0';
-      else
-	{
-	  /* In the old BSD style of archive, there is no / terminator.
-	     Instead, there is space padding at the end of the name.  */
-	  size_t i = 15;
-	  do
-	    elf->state.ar.ar_name[i] = '\0';
-	  while (i > 0 && elf->state.ar.ar_name[--i] == ' ');
-	}
-
-      elf_ar_hdr->ar_name = elf->state.ar.ar_name;
-    }
-
-  if (unlikely (ar_hdr->ar_size[0] == ' '))
-    /* Something is really wrong.  We cannot live without a size for
-       the member since it will not be possible to find the next
-       archive member.  */
-    {
-      __libelf_seterrno (ELF_E_INVALID_ARCHIVE);
-      return -1;
-    }
-
-  /* Since there are no specialized functions to convert ASCII to
-     time_t, uid_t, gid_t, mode_t, and off_t we use either atol or
-     atoll depending on the size of the types.  We are also prepared
-     for the case where the whole field in the `struct ar_hdr' is
-     filled in which case we cannot simply use atol/l but instead have
-     to create a temporary copy.  */
-
-#define INT_FIELD(FIELD)						      \
-  do									      \
-    {									      \
-      char buf[sizeof (ar_hdr->FIELD) + 1];				      \
-      const char *string = ar_hdr->FIELD;				      \
-      if (ar_hdr->FIELD[sizeof (ar_hdr->FIELD) - 1] != ' ')		      \
-	{								      \
-	  *((char *) mempcpy (buf, ar_hdr->FIELD, sizeof (ar_hdr->FIELD)))  \
-	    = '\0';							      \
-	  string = buf;							      \
-	}								      \
-      if (sizeof (elf_ar_hdr->FIELD) <= sizeof (long int))		      \
-	elf_ar_hdr->FIELD = (__typeof (elf_ar_hdr->FIELD)) atol (string);     \
-      else								      \
-	elf_ar_hdr->FIELD = (__typeof (elf_ar_hdr->FIELD)) atoll (string);    \
-    }									      \
-  while (0)
-
-  INT_FIELD (ar_date);
-  INT_FIELD (ar_uid);
-  INT_FIELD (ar_gid);
-  INT_FIELD (ar_mode);
-  INT_FIELD (ar_size);
-
-  if (elf_ar_hdr->ar_size < 0)
-    {
-      __libelf_seterrno (ELF_E_INVALID_ARCHIVE);
-      return -1;
-    }
-
-  /* Truncated file?  */
-  size_t maxsize;
-  maxsize = (elf->start_offset + elf->maximum_size
-	     - elf->state.ar.offset - sizeof (struct ar_hdr));
-  if ((size_t) elf_ar_hdr->ar_size > maxsize)
-    elf_ar_hdr->ar_size = maxsize;
-
-  return 0;
-}
-
-
 /* We were asked to return a clone of an existing descriptor.  This
    function must be called with the lock on the parent descriptor
    being held. */
 static Elf *
 dup_elf (int fildes, Elf_Cmd cmd, Elf *ref)
 {
-  struct Elf *result;
-
   if (fildes == -1)
     /* Allow the user to pass -1 as the file descriptor for the new file.  */
     fildes = ref->fildes;
@@ -1040,34 +716,8 @@ dup_elf (int fildes, Elf_Cmd cmd, Elf *ref)
   /* Now it is time to distinguish between reading normal files and
      archives.  Normal files can easily be handled be incrementing the
      reference counter and return the same descriptor.  */
-  if (ref->kind != ELF_K_AR)
-    {
-      ++ref->ref_count;
-      return ref;
-    }
-
-  /* This is an archive.  We must create a descriptor for the archive
-     member the internal pointer of the archive file descriptor is
-     pointing to.  First read the header of the next member if this
-     has not happened already.  */
-  if (ref->state.ar.elf_ar_hdr.ar_name == NULL
-      && __libelf_next_arhdr_wrlock (ref) != 0)
-    /* Something went wrong.  Maybe there is no member left.  */
-    return NULL;
-
-  /* We have all the information we need about the next archive member.
-     Now create a descriptor for it.  */
-  result = read_file (fildes, ref->state.ar.offset + sizeof (struct ar_hdr),
-		      ref->state.ar.elf_ar_hdr.ar_size, cmd, ref);
-
-  /* Enlist this new descriptor in the list of children.  */
-  if (result != NULL)
-    {
-      result->next = ref->state.ar.children;
-      ref->state.ar.children = result;
-    }
-
-  return result;
+	++ref->ref_count;
+	return ref;
 }
 
 
@@ -1128,7 +778,7 @@ elf_begin (int fildes, Elf_Cmd cmd, Elf *ref)
   if (ref != NULL)
     /* Make sure the descriptor is not suddenly going away.  */
     rwlock_rdlock (ref->lock);
-  else if (unlikely (fcntl (fildes, F_GETFD) == -1 && errno == EBADF))
+  else if (unlikely (!is_valid_fd(fildes) && errno == EBADF))
     {
       /* We cannot do anything productive without a file descriptor.  */
       __libelf_seterrno (ELF_E_INVALID_FILE);

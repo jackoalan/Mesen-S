@@ -76,8 +76,8 @@ dwarf_siblingof (Dwarf_Die *die, Dwarf_Die *result)
 
 	  /* The sibling attribute should point after this DIE in the CU.
 	     But not after the end of the CU.  */
-	  size_t size = sibattr.cu->endp - sibattr.cu->startp;
-	  size_t die_off = this_die.addr - this_die.cu->startp;
+	  size_t size = (uint8_t*)sibattr.cu->endp - (uint8_t*)sibattr.cu->startp;
+	  size_t die_off = (uint8_t*)this_die.addr - (uint8_t*)this_die.cu->startp;
 	  if (unlikely (offset >= size || offset <= die_off))
 	    {
 	      __libdw_seterrno (DWARF_E_INVALID_DWARF);
@@ -85,7 +85,7 @@ dwarf_siblingof (Dwarf_Die *die, Dwarf_Die *result)
 	    }
 
 	  /* Compute the next address.  */
-	  addr = sibattr.cu->startp + offset;
+	  addr = (uint8_t*)sibattr.cu->startp + offset;
 	}
       else if (unlikely (addr == NULL)
 	       || unlikely (this_die.abbrev == DWARF_END_ABBREV))

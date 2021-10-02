@@ -144,7 +144,8 @@ __libdw_intern_next_unit (Dwarf *dbg, bool debug_types)
     *offsetp = data->d_size;
 
   /* Create an entry for this CU.  */
-  struct Dwarf_CU *newp = libdw_typed_alloc (dbg, struct Dwarf_CU);
+  struct Dwarf_CU *newp;
+	libdw_typed_alloc (newp, dbg, struct Dwarf_CU);
 
   newp->dbg = dbg;
   newp->sec_idx = sec_idx;
@@ -155,7 +156,6 @@ __libdw_intern_next_unit (Dwarf *dbg, bool debug_types)
   newp->version = version;
   newp->unit_id8 = unit_id8;
   newp->subdie_offset = subdie_offset;
-  Dwarf_Abbrev_Hash_init (&newp->abbrev_hash, 41);
   newp->orig_abbrev_offset = newp->last_abbrev_offset = abbrev_offset;
   newp->files = NULL;
   newp->lines = NULL;
@@ -167,8 +167,8 @@ __libdw_intern_next_unit (Dwarf *dbg, bool debug_types)
   newp->ranges_base = (Dwarf_Off) -1;
   newp->locs_base = (Dwarf_Off) -1;
 
-  newp->startp = data->d_buf + newp->start;
-  newp->endp = data->d_buf + newp->end;
+  newp->startp = (uint8_t*)data->d_buf + newp->start;
+  newp->endp = (uint8_t*)data->d_buf + newp->end;
 
   /* v4 debug type units have version == 4 and unit_type == DW_UT_type.  */
   if (debug_types)
@@ -207,10 +207,6 @@ __libdw_intern_next_unit (Dwarf *dbg, bool debug_types)
     }
   else
     newp->unit_type = unit_type;
-
-  /* Store a reference to any type unit ids in the hash for quick lookup.  */
-  if (unit_type == DW_UT_type || unit_type == DW_UT_split_type)
-    Dwarf_Sig8_Hash_insert (&dbg->sig8_hash, unit_id8, newp);
 
   /* Add the new entry to the search tree.  */
   if (tsearch (newp, tree, findcu_cb) == NULL)
@@ -265,19 +261,19 @@ __libdw_findcu_addr (Dwarf *dbg, void *addr)
   void **tree;
   Dwarf_Off start;
   if (addr >= dbg->sectiondata[IDX_debug_info]->d_buf
-      && addr < (dbg->sectiondata[IDX_debug_info]->d_buf
+      && addr < ((uint8_t*)dbg->sectiondata[IDX_debug_info]->d_buf
 		 + dbg->sectiondata[IDX_debug_info]->d_size))
     {
       tree = &dbg->cu_tree;
-      start = addr - dbg->sectiondata[IDX_debug_info]->d_buf;
+      start = (uint8_t*)addr - (uint8_t*)dbg->sectiondata[IDX_debug_info]->d_buf;
     }
   else if (dbg->sectiondata[IDX_debug_types] != NULL
 	   && addr >= dbg->sectiondata[IDX_debug_types]->d_buf
-	   && addr < (dbg->sectiondata[IDX_debug_types]->d_buf
+	   && addr < ((uint8_t*)dbg->sectiondata[IDX_debug_types]->d_buf
 		      + dbg->sectiondata[IDX_debug_types]->d_size))
     {
       tree = &dbg->tu_tree;
-      start = addr - dbg->sectiondata[IDX_debug_types]->d_buf;
+      start = (uint8_t*)addr - (uint8_t*)dbg->sectiondata[IDX_debug_types]->d_buf;
     }
   else
     return NULL;

@@ -115,7 +115,7 @@ elf_compress_gnu (Elf_Scn *scn, int inflate, unsigned int flags)
 
       uint64_t be64_size = htobe64 (orig_size);
       memmove (out_buf, "ZLIB", 4);
-      memmove (out_buf + 4, &be64_size, sizeof (be64_size));
+      memmove ((void*)((uint8_t*)out_buf + 4), &be64_size, sizeof (be64_size));
 
       /* We don't know anything about sh_entsize, sh_addralign and
 	 sh_flags won't have a SHF_COMPRESSED hint in the GNU format.
@@ -162,7 +162,7 @@ elf_compress_gnu (Elf_Scn *scn, int inflate, unsigned int flags)
 	 an 8-byte big-endian size.  There is only one type and
 	 Alignment isn't preserved separately.  */
       uint64_t gsize;
-      memcpy (&gsize, data->d_buf + 4, sizeof gsize);
+      memcpy (&gsize, (void*)((uint8_t*)data->d_buf + 4), sizeof gsize);
       gsize = be64toh (gsize);
 
       /* One more sanity check, size should be bigger than original
@@ -177,7 +177,7 @@ elf_compress_gnu (Elf_Scn *scn, int inflate, unsigned int flags)
 
       size_t size = gsize;
       size_t size_in = data->d_size - hsize;
-      void *buf_in = data->d_buf + hsize;
+      void *buf_in = (void*)((uint8_t*)data->d_buf + hsize);
       void *buf_out = __libelf_decompress (buf_in, size_in, size);
       if (buf_out == NULL)
 	return -1;

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8ebc2f87-6441-4236-a972-318f02baf267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{b8aec381-5be2-4858-918e-397d65b8c897}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="atomics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bpf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamicsizehash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamicsizehash_concurrent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eu-config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fixedsizehash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libeu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="printversion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdatomic-fbsd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="crc32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="crc32_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="error.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="next_prime.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="printversion.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xasprintf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xmalloc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xstrdup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xstrndup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win-pread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win-mman.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

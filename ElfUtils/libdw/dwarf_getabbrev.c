@@ -73,7 +73,7 @@ __libdw_getabbrev (Dwarf *dbg, struct Dwarf_CU *cu, Dwarf_Off offset,
      consists of two parts. The first part is an unsigned LEB128
      number representing the attribute's name. The second part is
      an unsigned LEB128 number representing the attribute's form.  */
-  const unsigned char *end = (dbg->sectiondata[IDX_debug_abbrev]->d_buf
+  const unsigned char *end = ((uint8_t*)dbg->sectiondata[IDX_debug_abbrev]->d_buf
 			      + dbg->sectiondata[IDX_debug_abbrev]->d_size);
   const unsigned char *start_abbrevp = abbrevp;
   unsigned int code;
@@ -82,11 +82,10 @@ __libdw_getabbrev (Dwarf *dbg, struct Dwarf_CU *cu, Dwarf_Off offset,
   /* Check whether this code is already in the hash table.  */
   bool foundit = false;
   Dwarf_Abbrev *abb = NULL;
-  if (cu == NULL
-      || (abb = Dwarf_Abbrev_Hash_find (&cu->abbrev_hash, code)) == NULL)
+  if (cu == NULL || abb == NULL)
     {
       if (result == NULL)
-	abb = libdw_typed_alloc (dbg, Dwarf_Abbrev);
+	libdw_typed_alloc (abb, dbg, Dwarf_Abbrev)
       else
 	abb = result;
     }
@@ -147,16 +146,6 @@ __libdw_getabbrev (Dwarf *dbg, struct Dwarf_CU *cu, Dwarf_Off offset,
   /* Return the length to the caller if she asked for it.  */
   if (lengthp != NULL)
     *lengthp = abbrevp - start_abbrevp;
-
-  /* Add the entry to the hash table.  */
-  if (cu != NULL && ! foundit)
-    if (Dwarf_Abbrev_Hash_insert (&cu->abbrev_hash, abb->code, abb) == -1)
-      {
-	/* The entry was already in the table, remove the one we just
-	   created and get the one already inserted.  */
-	libdw_typed_unalloc (dbg, Dwarf_Abbrev);
-	abb = Dwarf_Abbrev_Hash_find (&cu->abbrev_hash, code);
-      }
 
  out:
   return abb;

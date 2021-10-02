@@ -62,10 +62,10 @@ __libdw_max_len_sleb128 (const unsigned char *addr, const unsigned char *end)
   return __libdw_max_len_leb128 (type_len, addr, end);
 }
 
-#define get_uleb128_step(var, addr, nth)				      \
+#define get_uleb128_step(vartype, var, addr, nth)				      \
   do {									      \
     unsigned char __b = *(addr)++;					      \
-    (var) |= (typeof (var)) (__b & 0x7f) << ((nth) * 7);		      \
+    (var) |= (vartype) (__b & 0x7f) << ((nth) * 7);		      \
     if (likely ((__b & 0x80) == 0))					      \
       return (var);							      \
   } while (0)
@@ -77,11 +77,11 @@ __libdw_get_uleb128 (const unsigned char **addrp, const unsigned char *end)
 
   /* Unroll the first step to help the compiler optimize
      for the common single-byte case.  */
-  get_uleb128_step (acc, *addrp, 0);
+  get_uleb128_step (uint64_t, acc, *addrp, 0);
 
   const size_t max = __libdw_max_len_uleb128 (*addrp - 1, end);
   for (size_t i = 1; i < max; ++i)
-    get_uleb128_step (acc, *addrp, i);
+    get_uleb128_step (uint64_t, acc, *addrp, i);
   /* Other implementations set VALUE to UINT_MAX in this
      case.  So we better do this as well.  */
   return UINT64_MAX;
@@ -94,11 +94,11 @@ __libdw_get_uleb128_unchecked (const unsigned char **addrp)
 
   /* Unroll the first step to help the compiler optimize
      for the common single-byte case.  */
-  get_uleb128_step (acc, *addrp, 0);
+  get_uleb128_step (uint64_t, acc, *addrp, 0);
 
   const size_t max = len_leb128 (uint64_t);
   for (size_t i = 1; i < max; ++i)
-    get_uleb128_step (acc, *addrp, i);
+    get_uleb128_step (uint64_t, acc, *addrp, i);
   /* Other implementations set VALUE to UINT_MAX in this
      case.  So we better do this as well.  */
   return UINT64_MAX;
@@ -113,11 +113,11 @@ __libdw_get_uleb128_unchecked (const unsigned char **addrp)
 #define get_sleb128_step(var, addr, nth)				      \
   do {									      \
     unsigned char __b = *(addr)++;					      \
-    (var) |= (typeof (var)) (__b & 0x7f) << ((nth) * 7);		      \
+    (var) |= (uint64_t) (__b & 0x7f) << ((nth) * 7);		      \
     if (likely ((__b & 0x80) == 0))					      \
       {									      \
 	if ((__b & 0x40) != 0)						      \
-	  (var) |= - ((typeof (var)) 1 << (((nth) + 1) * 7));		      \
+	  (var) |= - ((int64_t) 1 << (((nth) + 1) * 7));		      \
 	return (var);							      \
       }									      \
   } while (0)
@@ -147,7 +147,7 @@ __libdw_get_sleb128 (const unsigned char **addrp, const unsigned char *end)
     {
       /* We only need the low bit of the final byte, and as it is the
 	 sign bit, we don't need to do anything else here.  */
-      acc |= ((typeof (acc)) b) << 7 * max;
+      acc |= ((uint64_t) b) << 7 * max;
       return acc;
     }
 
@@ -180,7 +180,7 @@ __libdw_get_sleb128_unchecked (const unsigned char **addrp)
     {
       /* We only need the low bit of the final byte, and as it is the
 	 sign bit, we don't need to do anything else here.  */
-      acc |= ((typeof (acc)) b) << 7 * max;
+      acc |= ((uint64_t) b) << 7 * max;
       return acc;
     }
 
@@ -320,32 +320,32 @@ read_8sbyte_unaligned_1 (bool other_byte_order, const void *p)
 #endif	/* allow unaligned */
 
 
-#define read_2ubyte_unaligned_inc(Dbg, Addr) \
-  ({ uint16_t t_ = read_2ubyte_unaligned (Dbg, Addr);			      \
-     Addr = (__typeof (Addr)) (((uintptr_t) (Addr)) + 2);		      \
-     t_; })
-#define read_2sbyte_unaligned_inc(Dbg, Addr) \
-  ({ int16_t t_ = read_2sbyte_unaligned (Dbg, Addr);			      \
-     Addr = (__typeof (Addr)) (((uintptr_t) (Addr)) + 2);		      \
-     t_; })
+#define read_2ubyte_unaligned_inc(Out, Dbg, Addr) \
+  { Out = read_2ubyte_unaligned (Dbg, Addr);			      \
+     Addr = (const unsigned char*) (((uintptr_t) (Addr)) + 2);		      \
+     }
+#define read_2sbyte_unaligned_inc(Out, Dbg, Addr) \
+  { Out = read_2sbyte_unaligned (Dbg, Addr);			      \
+     Addr = (const unsigned char*) (((uintptr_t) (Addr)) + 2);		      \
+     }
 
-#define read_4ubyte_unaligned_inc(Dbg, Addr) \
-  ({ uint32_t t_ = read_4ubyte_unaligned (Dbg, Addr);			      \
-     Addr = (__typeof (Addr)) (((uintptr_t) (Addr)) + 4);		      \
-     t_; })
-#define read_4sbyte_unaligned_inc(Dbg, Addr) \
-  ({ int32_t t_ = read_4sbyte_unaligned (Dbg, Addr);			      \
-     Addr = (__typeof (Addr)) (((uintptr_t) (Addr)) + 4);		      \
-     t_; })
+#define read_4ubyte_unaligned_inc(Out, Dbg, Addr) \
+  { Out = read_4ubyte_unaligned (Dbg, Addr);			      \
+     Addr = (const unsigned char*) (((uintptr_t) (Addr)) + 4);		      \
+     }
+#define read_4sbyte_unaligned_inc(Out, Dbg, Addr) \
+  { Out = read_4sbyte_unaligned (Dbg, Addr);			      \
+     Addr = (const unsigned char*) (((uintptr_t) (Addr)) + 4);		      \
+     }
 
-#define read_8ubyte_unaligned_inc(Dbg, Addr) \
-  ({ uint64_t t_ = read_8ubyte_unaligned (Dbg, Addr);			      \
-     Addr = (__typeof (Addr)) (((uintptr_t) (Addr)) + 8);		      \
-     t_; })
-#define read_8sbyte_unaligned_inc(Dbg, Addr) \
-  ({ int64_t t_ = read_8sbyte_unaligned (Dbg, Addr);			      \
-     Addr = (__typeof (Addr)) (((uintptr_t) (Addr)) + 8);		      \
-     t_; })
+#define read_8ubyte_unaligned_inc(Out, Dbg, Addr) \
+  { Out = read_8ubyte_unaligned (Dbg, Addr);			      \
+     Addr = (const unsigned char*) (((uintptr_t) (Addr)) + 8);		      \
+     }
+#define read_8sbyte_unaligned_inc(Out, Dbg, Addr) \
+  { Out = read_8sbyte_unaligned (Dbg, Addr);			      \
+     Addr = (const unsigned char*) (((uintptr_t) (Addr)) + 8);		      \
+     }
 
 /* 3ubyte reads are only used for DW_FORM_addrx3 and DW_FORM_strx3.
    And are probably very rare.  They are not optimized.  They are

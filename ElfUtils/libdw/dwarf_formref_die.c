@@ -83,7 +83,7 @@ dwarf_formref_die (Dwarf_Attribute *attr, Dwarf_Die *result)
 	 have to match in the type unit headers.  */
 
       uint64_t sig = read_8ubyte_unaligned (cu->dbg, attr->valp);
-      cu = Dwarf_Sig8_Hash_find (&cu->dbg->sig8_hash, sig);
+      cu = NULL;
       if (cu == NULL)
 	{
 	  /* Not seen before.  We have to scan through the type units.
@@ -99,8 +99,9 @@ dwarf_formref_die (Dwarf_Attribute *attr, Dwarf_Die *result)
 		    scan_debug_types = true;
 		  else
 		    {
-		      __libdw_seterrno (INTUSE(dwarf_errno) ()
-					?: DWARF_E_INVALID_REFERENCE);
+		  	const int dw_errno = INTUSE(dwarf_errno) ();
+		      __libdw_seterrno (dw_errno
+					? dw_errno : DWARF_E_INVALID_REFERENCE);
 		      return NULL;
 		    }
 		}
@@ -120,7 +121,7 @@ dwarf_formref_die (Dwarf_Attribute *attr, Dwarf_Die *result)
 	return NULL;
 
       datap = cu->startp;
-      size = cu->endp - cu->startp;
+      size = (uint8_t*)cu->endp - (uint8_t*)cu->startp;
     }
 
   if (unlikely (offset >= size))

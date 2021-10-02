@@ -31,7 +31,6 @@
 
 #include <libintl.h>
 #include <stdbool.h>
-#include <pthread.h>
 
 #include <libdw.h>
 #include <dwarf.h>
@@ -143,8 +142,6 @@ enum
 };
 
 
-#include "dwarf_sig8_hash.h"
-
 /* This is the structure representing the debugging state.  */
 struct Dwarf
 {
@@ -189,7 +186,6 @@ struct Dwarf
   /* Search tree and sig8 hash table for .debug_types type units.  */
   void *tu_tree;
   Dwarf_Off next_tu_offset;
-  Dwarf_Sig8_Hash sig8_hash;
 
   /* Search tree for split Dwarf associated with CUs in this debug.  */
   void *split_tree;
@@ -203,9 +199,6 @@ struct Dwarf
   /* Address ranges.  */
   Dwarf_Aranges *aranges;
 
-  /* Cached info from the CFI section.  */
-  struct Dwarf_CFI_s *cfi;
-
   /* Fake loc CU.  Used when synthesizing attributes for Dwarf_Ops that
      came from a location list entry in dwarf_getlocation_attr.
      Depending on version this is the .debug_loc or .debug_loclists
@@ -215,11 +208,6 @@ struct Dwarf
 
   /* Similar for addrx/constx, which will come from .debug_addr section.  */
   struct Dwarf_CU *fake_addr_cu;
-
-  /* Supporting lock for internal memory handling.  Ensures threads that have
-     an entry in the mem_tails array are not disturbed by new threads doing
-     allocations for this Dwarf.  */
-  pthread_rwlock_t mem_rwl;
 
   /* Internal memory handling.  This is basically a simplified thread-local
      reimplementation of obstacks.  Unfortunately the standard obstack
@@ -250,8 +238,6 @@ struct Dwarf_Abbrev
   unsigned int code : 31; /* The (unique) abbrev code.  */
   unsigned int tag;	  /* The tag of the DIE. */
 } attribute_packed;
-
-#include "dwarf_abbrev_hash.h"
 
 
 /* Files in line information records.  */
@@ -342,8 +328,6 @@ struct Dwarf_CU
      this field.  */
   struct Dwarf_CU *split;
 
-  /* Hash table for the abbreviations.  */
-  Dwarf_Abbrev_Hash abbrev_hash;
   /* Offset of the first abbreviation.  */
   size_t orig_abbrev_offset;
   /* Offset past last read abbreviation.  */
@@ -575,8 +559,8 @@ extern void __libdw_seterrno (int value) internal_function;
 
 
 /* Memory handling, the easy parts.  */
-#define libdw_alloc(dbg, type, tsize, cnt) \
-  ({ struct libdw_memblock *_tail = __libdw_alloc_tail(dbg);		      \
+#define libdw_alloc(res, dbg, type, tsize, cnt) \
+  { struct libdw_memblock *_tail = __libdw_alloc_tail(dbg);		      \
      size_t _required = (tsize) * (cnt);				      \
      type *_result = (type *) (_tail->mem + (_tail->size - _tail->remaining));\
      size_t _padding = ((__alignof (type)				      \
@@ -590,17 +574,17 @@ extern void __libdw_seterrno (int value) internal_function;
 	 _result = (type *) ((char *) _result + _padding);		      \
 	 _tail->remaining -= _required;					      \
        }								      \
-     _result; })
+     res = _result; }
 
-#define libdw_typed_alloc(dbg, type) \
-  libdw_alloc (dbg, type, sizeof (type), 1)
+#define libdw_typed_alloc(res, dbg, type) \
+  libdw_alloc (res, dbg, type, sizeof (type), 1)
 
 /* Can only be used to undo the last libdw_alloc.  */
 #define libdw_unalloc(dbg, type, tsize, cnt) \
-  ({ struct libdw_memblock *_tail = __libdw_thread_tail (dbg);		      \
+  { struct libdw_memblock *_tail = __libdw_thread_tail (dbg);		      \
      size_t _required = (tsize) * (cnt);				      \
      /* We cannot know the padding, it is lost.  */			      \
-     _tail->remaining += _required; })					      \
+     _tail->remaining += _required; }					      \
 
 #define libdw_typed_unalloc(dbg, type) \
   libdw_unalloc (dbg, type, sizeof (type), 1)
@@ -617,7 +601,7 @@ extern void *__libdw_allocate (Dwarf *dbg, size_t minsize, size_t align)
      __attribute__ ((__malloc__)) __nonnull_attribute__ (1);
 
 /* Default OOM handler.  */
-extern void __libdw_oom (void) __attribute ((noreturn)) attribute_hidden;
+extern void __libdw_oom (void) attribute_hidden;
 
 /* Read next unit (or v4 debug type) and return next offset.  Doesn't
    create an actual Dwarf_CU just provides necessary header fields.  */
@@ -862,7 +846,7 @@ __libdw_offset_in_section (Dwarf *dbg, int sec_index,
 
 static inline bool
 __libdw_in_section (Dwarf *dbg, int sec_index,
-		    const void *addr, size_t size)
+		    const uint8_t *addr, size_t size)
 {
   Elf_Data *data = __libdw_checked_get_data (dbg, sec_index);
   if (data == NULL)
@@ -878,22 +862,22 @@ __libdw_in_section (Dwarf *dbg, int sec_index,
   return true;
 }
 
-#define READ_AND_RELOCATE(RELOC_HOOK, VAL)				\
-  ({									\
+#define READ_AND_RELOCATE(RELOCATED_RES, RELOC_HOOK, VAL)				\
+  {									\
     if (!__libdw_in_section (dbg, sec_index, addr, width))		\
       return -1;							\
 									\
     const unsigned char *orig_addr = addr;				\
     if (width == 4)							\
-      VAL = read_4ubyte_unaligned_inc (dbg, addr);			\
+      read_4ubyte_unaligned_inc (VAL, dbg, addr)			\
     else								\
-      VAL = read_8ubyte_unaligned_inc (dbg, addr);			\
+      read_8ubyte_unaligned_inc (VAL, dbg, addr)			\
 									\
     int status = RELOC_HOOK (dbg, sec_index, orig_addr, width, &VAL);	\
     if (status < 0)							\
       return status;							\
-    status > 0;								\
-   })
+    RELOCATED_RES = status > 0;								\
+   }
 
 static inline int
 __libdw_read_address_inc (Dwarf *dbg,
@@ -901,7 +885,8 @@ __libdw_read_address_inc (Dwarf *dbg,
 			  int width, Dwarf_Addr *ret)
 {
   const unsigned char *addr = *addrp;
-  READ_AND_RELOCATE (__libdw_relocate_address, (*ret));
+	bool relocated;
+  READ_AND_RELOCATE (relocated, __libdw_relocate_address, (*ret));
   *addrp = addr;
   return 0;
 }
@@ -911,7 +896,8 @@ __libdw_read_address (Dwarf *dbg,
 		      int sec_index, const unsigned char *addr,
 		      int width, Dwarf_Addr *ret)
 {
-  READ_AND_RELOCATE (__libdw_relocate_address, (*ret));
+	bool relocated;
+  READ_AND_RELOCATE (relocated, __libdw_relocate_address, (*ret));
   return 0;
 }
 
@@ -922,7 +908,8 @@ __libdw_read_offset_inc (Dwarf *dbg,
 			 size_t size)
 {
   const unsigned char *addr = *addrp;
-  READ_AND_RELOCATE (__libdw_relocate_offset, (*ret));
+	bool relocated;
+  READ_AND_RELOCATE (relocated, __libdw_relocate_offset, (*ret));
   *addrp = addr;
   return __libdw_offset_in_section (dbg, sec_ret, *ret, size);
 }
@@ -933,7 +920,8 @@ __libdw_read_offset (Dwarf *dbg, Dwarf *dbg_ret,
 		     int width, Dwarf_Off *ret, int sec_ret,
 		     size_t size)
 {
-  READ_AND_RELOCATE (__libdw_relocate_offset, (*ret));
+	bool relocated;
+  READ_AND_RELOCATE (relocated, __libdw_relocate_offset, (*ret));
   return __libdw_offset_in_section (dbg_ret, sec_ret, *ret, size);
 }
 
@@ -1081,12 +1069,12 @@ str_offsets_base_off (Dwarf *dbg, Dwarf_CU *cu)
   uint64_t unit_length;
   uint16_t version;
 
-  unit_length = read_4ubyte_unaligned_inc (dbg, readp);
+  read_4ubyte_unaligned_inc (unit_length, dbg, readp);
   if (unlikely (unit_length == 0xffffffff))
     {
       if (unlikely (readendp - readp < 8))
 	goto no_header;
-      unit_length = read_8ubyte_unaligned_inc (dbg, readp);
+      read_8ubyte_unaligned_inc (unit_length, dbg, readp);
       /* In theory the offset size could be different
 	 between CU and str_offsets unit.  But we just
 	 ignore that here. */
@@ -1100,11 +1088,12 @@ str_offsets_base_off (Dwarf *dbg, Dwarf_CU *cu)
       || (uint64_t) (readendp - readp) < unit_length)
     goto no_header;
 
-  version = read_2ubyte_unaligned_inc (dbg, readp);
+  read_2ubyte_unaligned_inc (version, dbg, readp);
   if (version != 5)
     goto no_header;
   /* padding */
-  read_2ubyte_unaligned_inc (dbg, readp);
+	uint16_t nuffin;
+  read_2ubyte_unaligned_inc (nuffin, dbg, readp);
 
   off = (Dwarf_Off) (readp - start);
 
@@ -1162,14 +1151,15 @@ __libdw_cu_ranges_base (Dwarf_CU *cu)
 	      const unsigned char *const dataend
 		= (unsigned char *) data->d_buf + data->d_size;
 
-	      uint64_t unit_length = read_4ubyte_unaligned_inc (dbg, readp);
+	      uint64_t unit_length;
+	  	read_4ubyte_unaligned_inc (unit_length, dbg, readp);
 	      unsigned int offset_size = 4;
 	      if (unlikely (unit_length == 0xffffffff))
 		{
 		  if (unlikely (readp > dataend - 8))
 		    goto no_header;
 
-		  unit_length = read_8ubyte_unaligned_inc (dbg, readp);
+		  read_8ubyte_unaligned_inc (unit_length, dbg, readp);
 		  offset_size = 8;
 		}
 
@@ -1178,7 +1168,8 @@ __libdw_cu_ranges_base (Dwarf_CU *cu)
 		  || unit_length > (uint64_t) (dataend - readp))
 		goto no_header;
 
-	      uint16_t version = read_2ubyte_unaligned_inc (dbg, readp);
+	      uint16_t version;
+	  	read_2ubyte_unaligned_inc (version, dbg, readp);
 	      if (version != 5)
 		goto no_header;
 
@@ -1191,7 +1182,7 @@ __libdw_cu_ranges_base (Dwarf_CU *cu)
 		goto no_header;
 
 	      uint32_t offset_entry_count;
-	      offset_entry_count = read_4ubyte_unaligned_inc (dbg, readp);
+	      read_4ubyte_unaligned_inc (offset_entry_count, dbg, readp);
 
 	      const unsigned char *offset_array_start = readp;
 	      if (offset_entry_count <= 0)
@@ -1240,14 +1231,15 @@ __libdw_cu_locs_base (Dwarf_CU *cu)
 	  const unsigned char *const dataend
 	    = (unsigned char *) data->d_buf + data->d_size;
 
-	  uint64_t unit_length = read_4ubyte_unaligned_inc (dbg, readp);
+	  uint64_t unit_length;
+      	read_4ubyte_unaligned_inc (unit_length, dbg, readp);
 	  unsigned int offset_size = 4;
 	  if (unlikely (unit_length == 0xffffffff))
 	    {
 	      if (unlikely (readp > dataend - 8))
 		goto no_header;
 
-	      unit_length = read_8ubyte_unaligned_inc (dbg, readp);
+	      read_8ubyte_unaligned_inc (unit_length, dbg, readp);
 	      offset_size = 8;
 	    }
 
@@ -1256,7 +1248,8 @@ __libdw_cu_locs_base (Dwarf_CU *cu)
 	      || unit_length > (uint64_t) (dataend - readp))
 	    goto no_header;
 
-	  uint16_t version = read_2ubyte_unaligned_inc (dbg, readp);
+	  uint16_t version;
+      	read_2ubyte_unaligned_inc (version, dbg, readp);
 	  if (version != 5)
 	    goto no_header;
 
@@ -1269,7 +1262,7 @@ __libdw_cu_locs_base (Dwarf_CU *cu)
 	    goto no_header;
 
 	  uint32_t offset_entry_count;
-	  offset_entry_count = read_4ubyte_unaligned_inc (dbg, readp);
+	  read_4ubyte_unaligned_inc (offset_entry_count, dbg, readp);
 
 	  const unsigned char *offset_array_start = readp;
 	  if (offset_entry_count <= 0)

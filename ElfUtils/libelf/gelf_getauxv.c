@@ -94,7 +94,7 @@ gelf_getauxv (Elf_Data *data, int ndx, GElf_auxv_t *dst)
 	  goto out;
 	}
 
-      memcpy (dst, data_scn->d.d_buf + ndx * sizeof (GElf_auxv_t),
+      memcpy (dst, (void*)((uint8_t*)data_scn->d.d_buf + ndx * sizeof (GElf_auxv_t)),
 	      sizeof (GElf_auxv_t));
     }
 

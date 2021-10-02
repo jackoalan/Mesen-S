@@ -143,7 +143,8 @@ store_implicit_value (Dwarf *dbg, void **cache, Dwarf_Op *op)
 {
   if (dbg == NULL)
     return -1;
-  struct loc_block_s *block = libdw_alloc (dbg, struct loc_block_s,
+  struct loc_block_s *block;
+	libdw_alloc (block, dbg, struct loc_block_s,
 					   sizeof (struct loc_block_s), 1);
   const unsigned char *data = (const unsigned char *) (uintptr_t) op->number2;
   /* Skip the block length.  */
@@ -216,7 +217,8 @@ is_constant_offset (Dwarf_Attribute *attr,
       if (INTUSE(dwarf_formudata) (attr, &offset) != 0)
 	return -1;
 
-      Dwarf_Op *result = libdw_alloc (attr->cu->dbg,
+      Dwarf_Op *result;
+  	libdw_alloc (result, attr->cu->dbg,
 				      Dwarf_Op, sizeof (Dwarf_Op), 1);
 
       result->atom = DW_OP_plus_uconst;
@@ -225,7 +227,8 @@ is_constant_offset (Dwarf_Attribute *attr,
       result->offset = 0;
 
       /* Insert a record in the search tree so we can find it again later.  */
-      struct loc_s *newp = libdw_alloc (attr->cu->dbg,
+      struct loc_s *newp;
+  	libdw_alloc (newp, attr->cu->dbg,
 					struct loc_s, sizeof (struct loc_s),
 					1);
       newp->addr = attr->valp;
@@ -290,7 +293,7 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
   /* Stack allocate at most this many locs.  */
 #define MAX_STACK_LOCS 256
   struct loclist stack_locs[MAX_STACK_LOCS];
-#define NEW_LOC() ({ struct loclist *ll;			\
+#define NEW_LOC(llout) { struct loclist *ll;			\
 		     ll = (likely (n < MAX_STACK_LOCS)		\
 			   ? &stack_locs[n]			\
 			   : malloc (sizeof (struct loclist)));	\
@@ -299,12 +302,13 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 		     n++;					\
 		     ll->next = loclist;			\
 		     loclist = ll;				\
-		     ll; })
+		     llout = ll; }
 
   if (cfap)
     {
       /* Synthesize the operation to push the CFA before the expression.  */
-      struct loclist *newloc = NEW_LOC ();
+      struct loclist *newloc;
+  	NEW_LOC (newloc);
       newloc->atom = DW_OP_call_frame_cfa;
       newloc->number = 0;
       newloc->number2 = 0;
@@ -316,7 +320,7 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
   while (data < end_data)
     {
       struct loclist *newloc;
-      newloc = NEW_LOC ();
+      NEW_LOC (newloc);
       newloc->number = 0;
       newloc->number2 = 0;
       newloc->offset = data - block->data;
@@ -333,14 +337,14 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 		  if (unlikely (data + 4 > end_data))
 		    goto invalid;
 		  else
-		    newloc->number = read_4ubyte_unaligned_inc (&bo, data);
+		    read_4ubyte_unaligned_inc (newloc->number, &bo, data)
 		}
 	      else
 		{
 		  if (unlikely (data + 8 > end_data))
 		    goto invalid;
 		  else
-		    newloc->number = read_8ubyte_unaligned_inc (&bo, data);
+		    read_8ubyte_unaligned_inc (newloc->number, &bo, data);
 		}
 	    }
 	  else if (__libdw_read_address_inc (dbg, sec_index, &data,
@@ -385,8 +389,70 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 	case DW_OP_le:
 	case DW_OP_lt:
 	case DW_OP_ne:
-	case DW_OP_lit0 ... DW_OP_lit31:
-	case DW_OP_reg0 ... DW_OP_reg31:
+	case DW_OP_lit0:
+      case DW_OP_lit1:
+      case DW_OP_lit2:
+      case DW_OP_lit3:
+      case DW_OP_lit4:
+      case DW_OP_lit5:
+      case DW_OP_lit6:
+      case DW_OP_lit7:
+      case DW_OP_lit8:
+      case DW_OP_lit9:
+      case DW_OP_lit10:
+      case DW_OP_lit11:
+      case DW_OP_lit12:
+      case DW_OP_lit13:
+      case DW_OP_lit14:
+      case DW_OP_lit15:
+      case DW_OP_lit16:
+      case DW_OP_lit17:
+      case DW_OP_lit18:
+      case DW_OP_lit19:
+      case DW_OP_lit20:
+      case DW_OP_lit21:
+      case DW_OP_lit22:
+      case DW_OP_lit23:
+      case DW_OP_lit24:
+      case DW_OP_lit25:
+      case DW_OP_lit26:
+      case DW_OP_lit27:
+      case DW_OP_lit28:
+      case DW_OP_lit29:
+      case DW_OP_lit30:
+      case DW_OP_lit31:
+	case DW_OP_reg0:
+      case DW_OP_reg1:
+		case DW_OP_reg2:
+		case DW_OP_reg3:
+		case DW_OP_reg4:
+		case DW_OP_reg5:
+		case DW_OP_reg6:
+		case DW_OP_reg7:
+		case DW_OP_reg8:
+		case DW_OP_reg9:
+		case DW_OP_reg10:
+		case DW_OP_reg11:
+		case DW_OP_reg12:
+		case DW_OP_reg13:
+		case DW_OP_reg14:
+		case DW_OP_reg15:
+		case DW_OP_reg16:
+		case DW_OP_reg17:
+		case DW_OP_reg18:
+		case DW_OP_reg19:
+		case DW_OP_reg20:
+		case DW_OP_reg21:
+		case DW_OP_reg22:
+		case DW_OP_reg23:
+		case DW_OP_reg24:
+		case DW_OP_reg25:
+		case DW_OP_reg26:
+		case DW_OP_reg27:
+		case DW_OP_reg28:
+		case DW_OP_reg29:
+		case DW_OP_reg30:
+		case DW_OP_reg31:
 	case DW_OP_nop:
 	case DW_OP_push_object_address:
 	case DW_OP_call_frame_cfa:
@@ -431,7 +497,7 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 	  if (unlikely (data + 2 > end_data))
 	    goto invalid;
 
-	  newloc->number = read_2ubyte_unaligned_inc (&bo, data);
+	  read_2ubyte_unaligned_inc (newloc->number, &bo, data);
 	  break;
 
 	case DW_OP_const2s:
@@ -441,14 +507,14 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 	  if (unlikely (data + 2 > end_data))
 	    goto invalid;
 
-	  newloc->number = read_2sbyte_unaligned_inc (&bo, data);
+	  read_2sbyte_unaligned_inc (newloc->number, &bo, data);
 	  break;
 
 	case DW_OP_const4u:
 	  if (unlikely (data + 4 > end_data))
 	    goto invalid;
 
-	  newloc->number = read_4ubyte_unaligned_inc (&bo, data);
+	  read_4ubyte_unaligned_inc (newloc->number, &bo, data);
 	  break;
 
 	case DW_OP_const4s:
@@ -457,21 +523,21 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 	  if (unlikely (data + 4 > end_data))
 	    goto invalid;
 
-	  newloc->number = read_4sbyte_unaligned_inc (&bo, data);
+	  read_4sbyte_unaligned_inc (newloc->number, &bo, data);
 	  break;
 
 	case DW_OP_const8u:
 	  if (unlikely (data + 8 > end_data))
 	    goto invalid;
 
-	  newloc->number = read_8ubyte_unaligned_inc (&bo, data);
+	  read_8ubyte_unaligned_inc (newloc->number, &bo, data);
 	  break;
 
 	case DW_OP_const8s:
 	  if (unlikely (data + 8 > end_data))
 	    goto invalid;
 
-	  newloc->number = read_8sbyte_unaligned_inc (&bo, data);
+	  read_8sbyte_unaligned_inc (newloc->number, &bo, data);
 	  break;
 
 	case DW_OP_constu:
@@ -490,7 +556,38 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 	  break;
 
 	case DW_OP_consts:
-	case DW_OP_breg0 ... DW_OP_breg31:
+	case DW_OP_breg0:
+      case DW_OP_breg1:
+		case DW_OP_breg2:
+		case DW_OP_breg3:
+		case DW_OP_breg4:
+		case DW_OP_breg5:
+		case DW_OP_breg6:
+		case DW_OP_breg7:
+		case DW_OP_breg8:
+		case DW_OP_breg9:
+		case DW_OP_breg10:
+		case DW_OP_breg11:
+		case DW_OP_breg12:
+		case DW_OP_breg13:
+		case DW_OP_breg14:
+		case DW_OP_breg15:
+		case DW_OP_breg16:
+		case DW_OP_breg17:
+		case DW_OP_breg18:
+		case DW_OP_breg19:
+		case DW_OP_breg20:
+		case DW_OP_breg21:
+		case DW_OP_breg22:
+		case DW_OP_breg23:
+		case DW_OP_breg24:
+		case DW_OP_breg25:
+		case DW_OP_breg26:
+		case DW_OP_breg27:
+		case DW_OP_breg28:
+		case DW_OP_breg29:
+		case DW_OP_breg30:
+		case DW_OP_breg31:
 	case DW_OP_fbreg:
 	  get_sleb128 (newloc->number, data, end_data);
 	  break;
@@ -580,7 +677,8 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 
   if (valuep)
     {
-      struct loclist *newloc = NEW_LOC ();
+      struct loclist *newloc;
+  	NEW_LOC (newloc);
       newloc->atom = DW_OP_stack_value;
       newloc->number = 0;
       newloc->number2 = 0;
@@ -590,7 +688,7 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
   /* Allocate the array.  */
   Dwarf_Op *result;
   if (dbg != NULL)
-    result = libdw_alloc (dbg, Dwarf_Op, sizeof (Dwarf_Op), n);
+    libdw_alloc (result, dbg, Dwarf_Op, sizeof (Dwarf_Op), n)
   else
     {
       result = malloc (sizeof *result * n);
@@ -637,7 +735,7 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
   /* Insert a record in the search tree so that we can find it again later.  */
   struct loc_s *newp;
   if (dbg != NULL)
-    newp = libdw_alloc (dbg, struct loc_s, sizeof (struct loc_s), 1);
+    libdw_alloc (newp, dbg, struct loc_s, sizeof (struct loc_s), 1)
   else
     {
       newp = malloc (sizeof *newp);
@@ -791,7 +889,7 @@ initial_offset (Dwarf_Attribute *attr, ptrdiff_t *offset)
       if (idx > max_idx)
 	goto invalid_offset;
 
-      datap = (cu->dbg->sectiondata[secidx]->d_buf
+      datap = ((uint8_t*)cu->dbg->sectiondata[secidx]->d_buf
 	       + loc_base_off + (idx * offset_size));
       if (offset_size == 4)
 	start_offset = read_4ubyte_unaligned (cu->dbg, datap);
@@ -823,8 +921,8 @@ getlocations_addr (Dwarf_Attribute *attr, ptrdiff_t offset,
   Dwarf_CU *cu = attr->cu;
   Dwarf *dbg = cu->dbg;
   size_t secidx = cu->version < 5 ? IDX_debug_loc : IDX_debug_loclists;
-  const unsigned char *readp = locs->d_buf + offset;
-  const unsigned char *readendp = locs->d_buf + locs->d_size;
+  const unsigned char *readp = (uint8_t*)locs->d_buf + offset;
+  const unsigned char *readendp = (uint8_t*)locs->d_buf + locs->d_size;
 
   Dwarf_Addr begin;
   Dwarf_Addr end;
@@ -855,7 +953,7 @@ getlocations_addr (Dwarf_Attribute *attr, ptrdiff_t offset,
 	  __libdw_seterrno (DWARF_E_INVALID_DWARF);
 	  return -1;
 	}
-      block.length = read_2ubyte_unaligned_inc (dbg, readp);
+       read_2ubyte_unaligned_inc (block.length, dbg, readp);
     }
   else
     {
@@ -920,7 +1018,7 @@ dwarf_getlocation_addr (Dwarf_Attribute *attr, Dwarf_Addr address,
   /* If is_constant_offset is successful, we are done with 1 result.  */
   int result = is_constant_offset (attr, llbufs, listlens);
   if (result != 1)
-    return result ?: 1;
+    return result ?result: 1;
 
   Dwarf_Addr base, start, end;
   Dwarf_Op *expr;

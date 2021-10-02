@@ -1,0 +1,408 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{87b07f36-5820-481f-acf4-191a913225c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{3e513a1c-5679-4ef4-a3a1-4a4ccc922a8f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="abstract.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chdr_xlate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dl-hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="elf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="elf-knowledge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exttypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gelf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gelf_xlate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gnuhash_xlate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libelf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libelfP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="note_xlate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="version_xlate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="elf_begin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_clone.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_cntl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_compress.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_compress_gnu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_end.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_error.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_fill.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_flagdata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_flagehdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_flagelf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_flagphdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_flagscn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_flagshdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getarhdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getaroff.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getarsym.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getbase.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getdata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getdata_rawchunk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getident.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getphdrnum.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getscn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getshdrnum.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_getshdrstrndx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_gnu_hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_kind.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_ndxscn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_newdata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_newscn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_next.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_nextscn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_rand.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_rawdata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_rawfile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_readall.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_scnshndx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_strptr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_update.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf_version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_checksum.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_fsize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_getchdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_getehdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_getphdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_getshdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_newehdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_newphdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_offscn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_updatefile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_updatenull.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_xlatetof.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf32_xlatetom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_checksum.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_fsize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_getchdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_getehdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_getphdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_getshdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_newehdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_newphdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_offscn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_updatefile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_updatenull.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_xlatetof.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elf64_xlatetom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_checksum.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_fsize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getauxv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getchdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getclass.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getdyn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getehdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getlib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getmove.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getnote.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getphdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getrel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getrela.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getshdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getsym.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getsyminfo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getsymshndx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getverdaux.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getverdef.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getvernaux.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getverneed.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_getversym.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_newehdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_newphdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_offscn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_auxv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_dyn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_ehdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_lib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_move.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_phdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_rel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_rela.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_shdr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_sym.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_syminfo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_symshndx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_verdaux.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_verdef.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_vernaux.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_verneed.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_update_versym.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_xlate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_xlatetof.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gelf_xlatetom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libelf_crc32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libelf_next_prime.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nlist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

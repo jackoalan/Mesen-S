@@ -111,12 +111,10 @@ startswith (const char *str, const char *prefix)
 #define gettext_noop(Str) Str
 
 #ifndef TEMP_FAILURE_RETRY
-#define TEMP_FAILURE_RETRY(expression) \
-  ({ ssize_t __res; \
+#define TEMP_FAILURE_RETRY(var, expression) \
      do \
-       __res = expression; \
-     while (__res == -1 && errno == EINTR); \
-     __res; })
+       var = expression; \
+     while (var == -1 && errno == EINTR);
 #endif
 
 #ifndef ACCESSPERMS
@@ -138,7 +136,8 @@ pwrite_retry (int fd, const void *buf, size_t len, off_t off)
 
   do
     {
-      ssize_t ret = TEMP_FAILURE_RETRY (pwrite (fd, ((char *)buf) + recvd, len - recvd,
+	   ssize_t ret;
+      TEMP_FAILURE_RETRY (ret, pwrite (fd, ((char *)buf) + recvd, len - recvd,
 						off + recvd));
       if (ret <= 0)
 	return ret < 0 ? ret : recvd;
@@ -157,7 +156,8 @@ write_retry (int fd, const void *buf, size_t len)
 
   do
     {
-      ssize_t ret = TEMP_FAILURE_RETRY (write (fd, ((char *)buf) + recvd, len - recvd));
+	   ssize_t ret;
+      TEMP_FAILURE_RETRY (ret, write (fd, ((char *)buf) + recvd, len - recvd));
       if (ret <= 0)
 	return ret < 0 ? ret : recvd;
 
@@ -175,7 +175,8 @@ pread_retry (int fd, void *buf, size_t len, off_t off)
 
   do
     {
-      ssize_t ret = TEMP_FAILURE_RETRY (pread (fd, ((char *)buf) + recvd, len - recvd,
+	   ssize_t ret;
+      TEMP_FAILURE_RETRY (ret, pread (fd, ((char *)buf) + recvd, len - recvd,
 					       off + recvd));
       if (ret <= 0)
 	return ret < 0 ? ret : recvd;

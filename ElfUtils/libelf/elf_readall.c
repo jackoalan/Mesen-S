@@ -40,31 +40,6 @@
 #include "common.h"
 
 
-static void
-set_address (Elf *elf, size_t offset)
-{
-  if (elf->kind == ELF_K_AR)
-    {
-      Elf *child = elf->state.ar.children;
-
-      while (child != NULL)
-	{
-	  if (child->map_address == NULL)
-	    {
-	      child->map_address = elf->map_address;
-	      child->start_offset -= offset;
-	      if (child->kind == ELF_K_AR)
-		child->state.ar.offset -= offset;
-
-	      set_address (child, offset);
-	    }
-
-	  child = child->next;
-	}
-    }
-}
-
-
 char *
 internal_function
 __libelf_readall (Elf *elf)
@@ -129,13 +104,6 @@ __libelf_readall (Elf *elf)
 	      /* Also remember that we allocated the memory.  */
 	      elf->flags |= ELF_F_MALLOCED;
 
-	      /* Propagate the information down to all children and
-		 their children.  */
-	      set_address (elf, elf->start_offset);
-
-	      /* Correct the own offsets.  */
-	      if (elf->kind == ELF_K_AR)
-		elf->state.ar.offset -= elf->start_offset;
 	      elf->start_offset = 0;
 	    }
 	}

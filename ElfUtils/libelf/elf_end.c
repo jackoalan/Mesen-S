@@ -59,22 +59,6 @@ elf_end (Elf *elf)
       return result;
     }
 
-  if (elf->kind == ELF_K_AR)
-    {
-      /* We cannot remove the descriptor now since we still have some
-	 descriptors which depend on it.  But we can free the archive
-	 symbol table since this is only available via the archive ELF
-	 descriptor.  The long name table cannot be freed yet since
-	 the archive headers for the ELF files in the archive point
-	 into this array.  */
-      if (elf->state.ar.ar_sym != (Elf_Arsym *) -1l)
-	free (elf->state.ar.ar_sym);
-      elf->state.ar.ar_sym = NULL;
-
-      if (elf->state.ar.children != NULL)
-	return 0;
-    }
-
   /* Remove this structure from the children list.  */
   parent = elf->parent;
   if (parent != NULL)
@@ -88,29 +72,12 @@ elf_end (Elf *elf)
       rwlock_rdlock (parent->lock);
       rwlock_wrlock (elf->lock);
 
-      if (parent->state.ar.children == elf)
-	parent->state.ar.children = elf->next;
-      else
-	{
-	  struct Elf *child = parent->state.ar.children;
-
-	  while (child->next != elf)
-	    child = child->next;
-
-	  child->next = elf->next;
-	}
-
       rwlock_unlock (parent->lock);
     }
 
   /* This was the last activation.  Free all resources.  */
   switch (elf->kind)
     {
-    case ELF_K_AR:
-      if (elf->state.ar.long_names != NULL)
-	free (elf->state.ar.long_names);
-      break;
-
     case ELF_K_ELF:
       {
 	Elf_Data_Chunk *rawchunks

@@ -83,5 +83,3 @@ elf_getshdrnum (Elf *elf, size_t *dst)
 
   return result;
 }
-/* Alias for the deprecated name.  */
-strong_alias (elf_getshdrnum, elf_getshnum)

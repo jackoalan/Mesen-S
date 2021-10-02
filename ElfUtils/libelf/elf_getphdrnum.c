@@ -67,7 +67,7 @@ __elf_getphdrnum_rdlock (Elf *elf, size_t *dst)
 	 if (likely (scns->cnt > 0))
 	   {
 	     Elf_Scn *scn = &elf->state.elf32.scns.data[0];
-	     Elf32_Shdr *shdr = scn->shdr.e32 ?: __elf32_getshdr_rdlock (scn);
+	     Elf32_Shdr *shdr = scn->shdr.e32 ? scn->shdr.e32 : __elf32_getshdr_rdlock (scn);
 	     if (shdr)
 	       *dst = shdr->sh_info;
 	   }
@@ -77,7 +77,7 @@ __elf_getphdrnum_rdlock (Elf *elf, size_t *dst)
 	 if (likely (scns->cnt > 0))
 	   {
 	     Elf_Scn *scn = &elf->state.elf64.scns.data[0];
-	     Elf64_Shdr *shdr = scn->shdr.e64 ?: __elf64_getshdr_rdlock (scn);
+	     Elf64_Shdr *shdr = scn->shdr.e64 ? scn->shdr.e64 : __elf64_getshdr_rdlock (scn);
 	     if (shdr)
 	       *dst = shdr->sh_info;
 	   }
