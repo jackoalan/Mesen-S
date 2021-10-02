@@ -45,8 +45,6 @@
   <ItemGroup>
     <ClInclude Include="atomics.h" />
     <ClInclude Include="bpf.h" />
-    <ClInclude Include="color.h" />
-    <ClInclude Include="dynamicsizehash.h" />
     <ClInclude Include="eu-config.h" />
     <ClInclude Include="fixedsizehash.h" />
     <ClInclude Include="libeu.h" />

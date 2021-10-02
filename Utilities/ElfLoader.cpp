@@ -398,18 +398,3 @@ bool ElfLoader::GetDwarfInfo(GetDwarfInfoArgs args) const {
 	ElfContext ctx(_filename.c_str(), true);
 	return ctx.GetDwarfInfo(args);
 }
-
-#if 0
-
-int main(int argc, char **argv) {
-	ElfLoader loader(
-		"/home/jacko/llvm-mos-sdk/cmake-build-debug-mos/bin/hello_sfc.elf");
-	if (!loader.IsHeaderValid()) {
-		fprintf(stderr, "invalid file");
-		return 1;
-	}
-	vector<uint8_t> binData = loader.ToBinary();
-	return binData.empty() ? 1 : 0;
-}
-
-#endif

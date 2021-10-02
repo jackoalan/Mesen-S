@@ -110,12 +110,11 @@ startswith (const char *str, const char *prefix)
 
 #define gettext_noop(Str) Str
 
-#ifndef TEMP_FAILURE_RETRY
+#undef TEMP_FAILURE_RETRY
 #define TEMP_FAILURE_RETRY(var, expression) \
      do \
        var = expression; \
      while (var == -1 && errno == EINTR);
-#endif
 
 #ifndef ACCESSPERMS
 #define ACCESSPERMS (S_IRWXU|S_IRWXG|S_IRWXO) /* 0777 */

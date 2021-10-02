@@ -851,9 +851,9 @@ __libdw_in_section (Dwarf *dbg, int sec_index,
   Elf_Data *data = __libdw_checked_get_data (dbg, sec_index);
   if (data == NULL)
     return false;
-  if (unlikely (addr < data->d_buf)
+  if (unlikely (addr < (uint8_t*)data->d_buf)
       || unlikely (data->d_size < size)
-      || unlikely ((size_t)(addr - data->d_buf) > data->d_size - size))
+      || unlikely ((size_t)(addr - (uint8_t*)data->d_buf) > data->d_size - size))
     {
       __libdw_seterrno (DWARF_E_INVALID_OFFSET);
       return false;

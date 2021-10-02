@@ -78,10 +78,7 @@ SEVENZIPOBJ=$(patsubst SevenZip/%.c,SevenZip/$(OBJFOLDER)/%.o,$(wildcard SevenZi
 LUAOBJ=$(patsubst Lua/%.c,Lua/$(OBJFOLDER)/%.o,$(wildcard Lua/*.c))
 LIBELFOBJ=$(patsubst ElfUtils/libelf/%.c,ElfUtils/libelf/$(OBJFOLDER)/%.o,$(wildcard ElfUtils/libelf/*.c))
 LIBDWOBJ=$(patsubst ElfUtils/libdw/%.c,ElfUtils/libdw/$(OBJFOLDER)/%.o,$(wildcard ElfUtils/libdw/*.c))
-LIBDWELFOBJ=$(patsubst ElfUtils/libdwelf/%.c,ElfUtils/libdwelf/$(OBJFOLDER)/%.o,$(wildcard ElfUtils/libdwelf/*.c))
-LIBDWFLOBJ=$(patsubst ElfUtils/libdwfl/%.c,ElfUtils/libdwfl/$(OBJFOLDER)/%.o,$(filter-out ElfUtils/libdwfl/bzip2.c ElfUtils/libdwfl/debuginfod-client.c ElfUtils/libdwfl/lzma.c ElfUtils/libdwfl/zstd.c,$(wildcard ElfUtils/libdwfl/*.c)))
-LIBEBLOBJ=$(patsubst ElfUtils/libebl/%.c,ElfUtils/libebl/$(OBJFOLDER)/%.o,$(wildcard ElfUtils/libebl/*.c))
-LIBEUOBJ=$(patsubst ElfUtils/lib/%.c,ElfUtils/lib/$(OBJFOLDER)/%.o,$(filter-out ElfUtils/lib/dynamicsizehash.c ElfUtils/lib/dynamicsizehash_concurrent.c,$(wildcard ElfUtils/lib/*.c)))
+LIBEUOBJ=$(patsubst ElfUtils/lib/%.c,ElfUtils/lib/$(OBJFOLDER)/%.o,$(wildcard ElfUtils/lib/*.c))
 ZLIBOBJ=$(patsubst ZLib/%.c,ZLib/$(OBJFOLDER)/%.o,$(wildcard ZLib/*.c))
 DLLOBJ=$(patsubst InteropDLL/%.cpp,InteropDLL/$(OBJFOLDER)/%.o,$(wildcard InteropDLL/*.cpp))
 
@@ -119,7 +116,7 @@ runtests:
 
 testhelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p TestHelper/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -o testhelper TestHelper/*.cpp InteropDLL/ConsoleWrapper.cpp $(SEVENZIPOBJ) $(LUAOBJ) $(LIBELFOBJ) $(LIBDWOBJ) $(LIBDWELFOBJ) $(LIBDWFLOBJ) $(LIBEBLOBJ) $(LIBEUOBJ) $(ZLIBOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CPPC) $(GCCOPTIONS) -Wl,-z,defs -o testhelper TestHelper/*.cpp InteropDLL/ConsoleWrapper.cpp $(SEVENZIPOBJ) $(LUAOBJ) $(LIBELFOBJ) $(LIBDWOBJ) $(LIBEUOBJ) $(ZLIBOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	mv testhelper TestHelper/$(OBJFOLDER)
 
 pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
@@ -134,13 +131,7 @@ ElfUtils/lib/$(OBJFOLDER)/%.o: ElfUtils/lib/%.c
 ElfUtils/libelf/$(OBJFOLDER)/%.o: ElfUtils/libelf/%.c
 	mkdir -p ElfUtils/libelf/$(OBJFOLDER) && cd ElfUtils/libelf/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -DHAVE_CONFIG_H=1 -I.. -I../.. -I../../lib -c $(patsubst ElfUtils/libelf/%, ../%, $<)
 ElfUtils/libdw/$(OBJFOLDER)/%.o: ElfUtils/libdw/%.c
-	mkdir -p ElfUtils/libdw/$(OBJFOLDER) && cd ElfUtils/libdw/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -DHAVE_CONFIG_H=1 -I.. -I../.. -I../../lib -I../../libelf -I../../libdwelf -c $(patsubst ElfUtils/libdw/%, ../%, $<)
-ElfUtils/libdwelf/$(OBJFOLDER)/%.o: ElfUtils/libdwelf/%.c
-	mkdir -p ElfUtils/libdwelf/$(OBJFOLDER) && cd ElfUtils/libdwelf/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -DHAVE_CONFIG_H=1 -I.. -I../.. -I../../lib -I../../libdw -I../../libdwfl -I../../libebl -I../../libelf -c $(patsubst ElfUtils/libdwelf/%, ../%, $<)
-ElfUtils/libdwfl/$(OBJFOLDER)/%.o: ElfUtils/libdwfl/%.c
-	mkdir -p ElfUtils/libdwfl/$(OBJFOLDER) && cd ElfUtils/libdwfl/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -DHAVE_CONFIG_H=1 -I.. -I../.. -I../../lib -I../../libdw -I../../libdwelf -I../../libebl -I../../libelf -c $(patsubst ElfUtils/libdwfl/%, ../%, $<)
-ElfUtils/libebl/$(OBJFOLDER)/%.o: ElfUtils/libebl/%.c
-	mkdir -p ElfUtils/libebl/$(OBJFOLDER) && cd ElfUtils/libebl/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -DHAVE_CONFIG_H=1 -I.. -I../.. -I../../lib -I../../libasm -I../../libdw -I../../libelf -c $(patsubst ElfUtils/libebl/%, ../%, $<)
+	mkdir -p ElfUtils/libdw/$(OBJFOLDER) && cd ElfUtils/libdw/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -DHAVE_CONFIG_H=1 -I.. -I../.. -I../../lib -I../../libelf -c $(patsubst ElfUtils/libdw/%, ../%, $<)
 ZLib/$(OBJFOLDER)/%.o: ZLib/%.c
 	mkdir -p ZLib/$(OBJFOLDER) && cd ZLib/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -c $(patsubst ZLib/%, ../%, $<)
 Utilities/$(OBJFOLDER)/%.o: Utilities/%.cpp
@@ -162,10 +153,10 @@ Linux/$(OBJFOLDER)/%.o: Linux/libevdev/%.c
 InteropDLL/$(OBJFOLDER)/%.o: InteropDLL/%.cpp
 	mkdir -p InteropDLL/$(OBJFOLDER) && cd InteropDLL/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS)  -c $(patsubst InteropDLL/%, ../%, $<)
 	
-InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(LIBELFOBJ) $(LIBDWOBJ) $(LIBDWELFOBJ) $(LIBDWFLOBJ) $(LIBEBLOBJ) $(LIBEUOBJ) $(ZLIBOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
+InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(LIBELFOBJ) $(LIBDWOBJ) $(LIBEUOBJ) $(ZLIBOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
 	mkdir -p bin
 	mkdir -p InteropDLL/$(OBJFOLDER)
-	$(CPPC) $(GCCOPTIONS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LIBELFOBJ) $(LIBDWOBJ) $(LIBDWELFOBJ) $(LIBDWFLOBJ) $(LIBEBLOBJ) $(LIBEUOBJ) $(ZLIBOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CPPC) $(GCCOPTIONS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LIBELFOBJ) $(LIBDWOBJ) $(LIBEUOBJ) $(ZLIBOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
 	
@@ -193,9 +184,6 @@ clean:
 	rm -rf SevenZip/$(OBJFOLDER)
 	rm -rf ElfUtils/libelf/$(OBJFOLDER)
 	rm -rf ElfUtils/libdw/$(OBJFOLDER)
-	rm -rf ElfUtils/libdwelf/$(OBJFOLDER)
-	rm -rf ElfUtils/libdwfl/$(OBJFOLDER)
-	rm -rf ElfUtils/libebl/$(OBJFOLDER)
 	rm -rf ElfUtils/lib/$(OBJFOLDER)
 	rm -rf ZLib/$(OBJFOLDER)
 	rm -rf Utilities/$(OBJFOLDER)
@@ -207,5 +195,3 @@ clean:
 	rm -rf PGOHelper/$(OBJFOLDER)
 	rm -rf $(RELEASEFOLDER)
 
-elftest: $(LIBELFOBJ) $(LIBDWOBJ) $(LIBDWELFOBJ) $(LIBDWFLOBJ) $(LIBEBLOBJ) $(LIBEUOBJ) $(ZLIBOBJ) Utilities/ElfLoader.cpp
-	$(CPPC) $(CCOPTIONS) -o elftest -I ElfUtils -pthread $(LIBELFOBJ) $(LIBDWOBJ) $(LIBDWELFOBJ) $(LIBDWFLOBJ) $(LIBEBLOBJ) $(LIBEUOBJ) $(ZLIBOBJ) Utilities/ElfLoader.cpp
