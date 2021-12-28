@@ -42,8 +42,9 @@ struct SpriteInfo
 			return false;
 		}
 
-		uint8_t endY = (Y + (interlace ? (Height >> 1) : Height)) & 0xFF;
-		return (scanline >= Y && scanline < endY) || (endY < Y && scanline < endY);
+		uint16_t endY = (Y + (interlace ? (Height >> 1) : Height));
+		uint8_t endY_8 = endY & 0xFF;
+		return (scanline >= Y && scanline < endY) || (endY_8 < Y && scanline < endY_8);
 	}
 };
 

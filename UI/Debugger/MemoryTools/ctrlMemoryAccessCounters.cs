@@ -186,5 +186,10 @@ namespace Mesen.GUI.Debugger.Controls
 			ExecStamp,
 			UninitRead,
 		}
-	}
+
+	  private void lstCounters_SelectedIndexChanged(object sender, EventArgs e)
+	  {
+
+	  }
+   }
 }
