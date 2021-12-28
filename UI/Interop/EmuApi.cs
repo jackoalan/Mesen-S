@@ -166,7 +166,7 @@ namespace Mesen.GUI
 			public Dictionary<int, SourceSymbol> SymbolsByCpuAddress;
 		}
 
-		private static string[] ReadAllLinesOrEmpty(string filePath)
+		private static string[] ReadSourceFileOrEmpty(string filePath)
 		{
 			try
 			{
@@ -174,6 +174,7 @@ namespace Mesen.GUI
 			}
 			catch (Exception)
 			{
+				WriteLogEntry("[EmuApi] Unable to read source file: " + filePath);
 				return new string[0];
 			}
 		}
@@ -208,7 +209,7 @@ namespace Mesen.GUI
 					files.Add(new SourceFileInfo
 					{
 						Name = filePath,
-						Data = ReadAllLinesOrEmpty(filePath)
+						Data = ReadSourceFileOrEmpty(filePath)
 					});
 				},
 				(UInt32 fileIdx, UInt32 line, UInt32 addr) =>
