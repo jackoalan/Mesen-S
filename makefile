@@ -151,7 +151,7 @@ Linux/$(OBJFOLDER)/%.o: Linux/%.cpp
 Linux/$(OBJFOLDER)/%.o: Linux/libevdev/%.c
 	mkdir -p Linux/$(OBJFOLDER) && cd Linux/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -c $(patsubst Linux/%, ../%, $<)
 InteropDLL/$(OBJFOLDER)/%.o: InteropDLL/%.cpp
-	mkdir -p InteropDLL/$(OBJFOLDER) && cd InteropDLL/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS)  -c $(patsubst InteropDLL/%, ../%, $<)
+	mkdir -p InteropDLL/$(OBJFOLDER) && cd InteropDLL/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS)  -c $(patsubst InteropDLL/%, ../%, $<) $(SDL2INC)
 	
 InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(LIBELFOBJ) $(LIBDWOBJ) $(LIBEUOBJ) $(ZLIBOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
 	mkdir -p bin
