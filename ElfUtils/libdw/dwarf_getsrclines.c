@@ -242,7 +242,13 @@ read_srclines (Dwarf *dbg,
 
   /* Next comes the header length.  */
   Dwarf_Word header_length;
-  if (length == 4)
+  if (length == 2)
+  {
+    if ((size_t) (lineendp - linep) < 2)
+      goto invalid_data;
+    read_2ubyte_unaligned_inc (header_length, dbg, linep);
+  }
+  else if (length == 4)
     {
       if ((size_t) (lineendp - linep) < 4)
 	goto invalid_data;

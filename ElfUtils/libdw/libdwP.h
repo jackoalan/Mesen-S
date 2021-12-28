@@ -239,6 +239,8 @@ struct Dwarf_Abbrev
   unsigned int tag;	  /* The tag of the DIE. */
 } attribute_packed;
 
+#include "dwarf_abbrev_hash.h"
+
 
 /* Files in line information records.  */
 struct Dwarf_Files_s
@@ -328,6 +330,8 @@ struct Dwarf_CU
      this field.  */
   struct Dwarf_CU *split;
 
+  /* Hash table for the abbreviations.  */
+  Dwarf_Abbrev_Hash abbrev_hash;
   /* Offset of the first abbreviation.  */
   size_t orig_abbrev_offset;
   /* Offset past last read abbreviation.  */
@@ -868,7 +872,9 @@ __libdw_in_section (Dwarf *dbg, int sec_index,
       return -1;							\
 									\
     const unsigned char *orig_addr = addr;				\
-    if (width == 4)							\
+    if (width == 2)							\
+      read_2ubyte_unaligned_inc (VAL, dbg, addr)             \
+    else if (width == 4)							\
       read_4ubyte_unaligned_inc (VAL, dbg, addr)			\
     else								\
       read_8ubyte_unaligned_inc (VAL, dbg, addr)			\
@@ -1174,7 +1180,7 @@ __libdw_cu_ranges_base (Dwarf_CU *cu)
 		goto no_header;
 
 	      uint8_t address_size = *readp++;
-	      if (address_size != 4 && address_size != 8)
+	      if (address_size != 2 && address_size != 4 && address_size != 8)
 		goto no_header;
 
 	      uint8_t segment_size = *readp++;
@@ -1254,7 +1260,7 @@ __libdw_cu_locs_base (Dwarf_CU *cu)
 	    goto no_header;
 
 	  uint8_t address_size = *readp++;
-	  if (address_size != 4 && address_size != 8)
+	  if (address_size != 2 && address_size != 4 && address_size != 8)
 	    goto no_header;
 
 	  uint8_t segment_size = *readp++;

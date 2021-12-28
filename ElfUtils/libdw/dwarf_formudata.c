@@ -83,8 +83,10 @@ __libdw_formptr (Dwarf_Attribute *attr, int sec_index,
 			    > data->d_size - size)))
 	    goto invalid;
 
-	  if (size == 4)
-	    offset = read_4ubyte_unaligned (attr->cu->dbg, datap);
+	  if (size == 2)
+	    offset = read_2ubyte_unaligned (attr->cu->dbg, datap);
+    else if (size == 4)
+      offset = read_4ubyte_unaligned (attr->cu->dbg, datap);
 	  else
 	    offset = read_8ubyte_unaligned (attr->cu->dbg, datap);
 

@@ -82,7 +82,8 @@ __libdw_getabbrev (Dwarf *dbg, struct Dwarf_CU *cu, Dwarf_Off offset,
   /* Check whether this code is already in the hash table.  */
   bool foundit = false;
   Dwarf_Abbrev *abb = NULL;
-  if (cu == NULL || abb == NULL)
+  if (cu == NULL
+      || (abb = Dwarf_Abbrev_Hash_find (&cu->abbrev_hash, code, NULL)) == NULL)
     {
       if (result == NULL)
 	libdw_typed_alloc (abb, dbg, Dwarf_Abbrev)
@@ -146,6 +147,16 @@ __libdw_getabbrev (Dwarf *dbg, struct Dwarf_CU *cu, Dwarf_Off offset,
   /* Return the length to the caller if she asked for it.  */
   if (lengthp != NULL)
     *lengthp = abbrevp - start_abbrevp;
+
+  /* Add the entry to the hash table.  */
+  if (cu != NULL && ! foundit)
+    if (Dwarf_Abbrev_Hash_insert (&cu->abbrev_hash, abb->code, abb) == -1)
+    {
+      /* The entry was already in the table, remove the one we just
+         created and get the one already inserted.  */
+      libdw_typed_unalloc (dbg, Dwarf_Abbrev);
+      abb = Dwarf_Abbrev_Hash_find (&cu->abbrev_hash, code, NULL);
+    }
 
  out:
   return abb;

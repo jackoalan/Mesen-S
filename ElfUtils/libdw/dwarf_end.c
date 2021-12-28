@@ -57,6 +57,8 @@ cu_free (void *arg)
   if(p != p->dbg->fake_loc_cu && p != p->dbg->fake_loclists_cu
      && p != p->dbg->fake_addr_cu)
     {
+      Dwarf_Abbrev_Hash_free (&p->abbrev_hash);
+
       /* Free split dwarf one way (from skeleton to split).  */
       if (p->unit_type == DW_UT_skeleton
 	  && p->split != NULL && p->split != (void *)-1)

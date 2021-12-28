@@ -132,9 +132,9 @@ __libdw_intern_next_unit (Dwarf *dbg, bool debug_types)
      Just assume we are dealing with 64bit in case the size is "unknown".
      Too much code assumes if it isn't 4 then it is 8 (or the other way
      around).  */
-  if (unlikely (address_size != 4 && address_size != 8))
+  if (unlikely (address_size != 2 && address_size != 4 && address_size != 8))
     address_size = 8;
-  if (unlikely (offset_size != 4 && offset_size != 8))
+  if (unlikely (offset_size != 2 && offset_size != 4 && offset_size != 8))
     offset_size = 8;
 
   /* Invalid or truncated debug section data?  */
@@ -156,6 +156,7 @@ __libdw_intern_next_unit (Dwarf *dbg, bool debug_types)
   newp->version = version;
   newp->unit_id8 = unit_id8;
   newp->subdie_offset = subdie_offset;
+  Dwarf_Abbrev_Hash_init (&newp->abbrev_hash, 41);
   newp->orig_abbrev_offset = newp->last_abbrev_offset = abbrev_offset;
   newp->files = NULL;
   newp->lines = NULL;

@@ -155,7 +155,7 @@ dwarf_getaranges (Dwarf *dbg, Dwarf_Aranges **aranges, size_t *naranges)
 	goto invalid;
 
       unsigned int address_size = *readp++;
-      if (unlikely (address_size != 4 && address_size != 8))
+      if (unlikely (address_size != 2 && address_size != 4 && address_size != 8))
 	goto invalid;
 
       /* We don't actually support segment selectors.  */
@@ -179,8 +179,10 @@ dwarf_getaranges (Dwarf *dbg, Dwarf_Aranges **aranges, size_t *naranges)
 	  if (readp + address_size > readendp)
 	    goto invalid;
 
-	  if (address_size == 4)
-	    read_4ubyte_unaligned_inc (range_length, dbg, readp)
+	  if (address_size == 2)
+	    read_2ubyte_unaligned_inc (range_length, dbg, readp)
+          else if (address_size == 4)
+            read_4ubyte_unaligned_inc (range_length, dbg, readp)
 	  else
 	    read_8ubyte_unaligned_inc (range_length, dbg, readp)
 

@@ -200,7 +200,9 @@ dwarf_getpubnames (Dwarf *dbg,
 	  /* READP points to the next offset/name pair.  */
 	  if (readp + dbg->pubnames_sets[cnt].address_len > endp)
 	    goto invalid_dwarf;
-	  if (dbg->pubnames_sets[cnt].address_len == 4)
+    if (dbg->pubnames_sets[cnt].address_len == 2)
+      read_2ubyte_unaligned_inc (gl.die_offset, dbg, readp)
+	  else if (dbg->pubnames_sets[cnt].address_len == 4)
 	  	read_4ubyte_unaligned_inc (gl.die_offset, dbg, readp)
 	  else
 	   read_8ubyte_unaligned_inc (gl.die_offset, dbg, readp)

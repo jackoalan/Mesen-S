@@ -441,7 +441,9 @@ initial_offset (Dwarf_Attribute *attr, ptrdiff_t *offset)
 
       datap = ((uint8_t*)cu->dbg->sectiondata[secidx]->d_buf
 	       + range_base_off + (idx * offset_size));
-      if (offset_size == 4)
+      if (offset_size == 2)
+        start_offset = read_2ubyte_unaligned (cu->dbg, datap);
+      else if (offset_size == 4)
 	start_offset = read_4ubyte_unaligned (cu->dbg, datap);
       else
 	start_offset = read_8ubyte_unaligned (cu->dbg, datap);

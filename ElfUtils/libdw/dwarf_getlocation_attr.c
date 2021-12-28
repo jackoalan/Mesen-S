@@ -102,8 +102,10 @@ dwarf_getlocation_attr (Dwarf_Attribute *attr, const Dwarf_Op *op, Dwarf_Attribu
       case DW_OP_GNU_const_index:
       case DW_OP_constx:
 	result->code = DW_AT_const_value;
-	if (attr->cu->address_size == 4)
-	  result->form = DW_FORM_data4;
+	if (attr->cu->address_size == 2)
+	  result->form = DW_FORM_data2;
+        else if (attr->cu->address_size == 4)
+          result->form = DW_FORM_data4;
 	else
 	  result->form = DW_FORM_data8;
 	result->valp = addr_valp (attr->cu, op->number);

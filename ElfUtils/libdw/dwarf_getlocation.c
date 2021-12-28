@@ -332,7 +332,14 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 	  if (dbg == NULL)
 	    {
 	      // XXX relocation?
-	      if (address_size == 4)
+    if (address_size == 2)
+    {
+      if (unlikely (data + 2 > end_data))
+        goto invalid;
+      else
+        read_2ubyte_unaligned_inc (newloc->number, &bo, data)
+    }
+	      else if (address_size == 4)
 		{
 		  if (unlikely (data + 4 > end_data))
 		    goto invalid;
@@ -891,8 +898,10 @@ initial_offset (Dwarf_Attribute *attr, ptrdiff_t *offset)
 
       datap = ((uint8_t*)cu->dbg->sectiondata[secidx]->d_buf
 	       + loc_base_off + (idx * offset_size));
-      if (offset_size == 4)
-	start_offset = read_4ubyte_unaligned (cu->dbg, datap);
+      if (offset_size == 2)
+	start_offset = read_2ubyte_unaligned (cu->dbg, datap);
+      else if (offset_size == 4)
+        start_offset = read_4ubyte_unaligned (cu->dbg, datap);
       else
 	start_offset = read_8ubyte_unaligned (cu->dbg, datap);
 

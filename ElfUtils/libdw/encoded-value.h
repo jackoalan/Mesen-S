@@ -89,7 +89,17 @@ __libdw_cfi_read_address_inc (const Dwarf_CFI *cache,
   const unsigned char *endp = cache->data->d.d_buf + cache->data->d.d_size;
   Dwarf eh_dbg = { .other_byte_order = MY_ELFDATA != cache->e_ident[EI_DATA] };
 
-  if (width == 4)
+  if (width == 2)
+  {
+    if (unlikely (*addrp + 2 > endp))
+    {
+      invalid_data:
+      __libdw_seterrno (DWARF_E_INVALID_CFI);
+      return -1;
+    }
+    *ret = read_2ubyte_unaligned_inc (&eh_dbg, *addrp);
+  }
+  else if (width == 4)
     {
       if (unlikely (*addrp + 4 > endp))
 	{
