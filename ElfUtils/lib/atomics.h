@@ -31,7 +31,7 @@
 #if HAVE_STDATOMIC_H
 /* If possible, use the compiler's preferred atomics.  */
 # include <stdatomic.h>
-#elif WIN32
+#elif _WIN32
 # include "win/win-stdatomic.h"
 #else
 /* Otherwise, try to use the builtins provided by this compiler.  */
