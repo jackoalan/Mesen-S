@@ -98,15 +98,6 @@
     <ClCompile Include="elf_flagshdr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="elf_getarhdr.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="elf_getaroff.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="elf_getarsym.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="elf_getbase.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -152,13 +143,7 @@
     <ClCompile Include="elf_newscn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="elf_next.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="elf_nextscn.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="elf_rand.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="elf_rawdata.c">
@@ -174,9 +159,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="elf_strptr.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="elf_update.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="elf_version.c">
@@ -210,9 +192,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="elf32_updatefile.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="elf32_updatenull.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="elf32_xlatetof.c">
@@ -249,9 +228,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="elf64_updatefile.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="elf64_updatenull.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="elf64_xlatetof.c">

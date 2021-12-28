@@ -21,16 +21,13 @@
     <ClInclude Include="encoded-value.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dwarf_sig8_hash.h">
+    <ClInclude Include="dwarf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dwarf_abbrev_hash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dwarf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cfi.h">
+    <ClInclude Include="dwarf_sig8_hash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,12 +47,6 @@
     <ClCompile Include="libdw_alloc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="frame-cache.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fde.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dwarf_whatform.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,9 +57,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_srclang.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_sig8_hash.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_siblingof.c">
@@ -99,9 +87,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_next_lines.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_next_cfi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_macro_param2.c">
@@ -194,9 +179,6 @@
     <ClCompile Include="dwarf_getsrcdirs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dwarf_getsrc_file.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dwarf_getsrc_die.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -210,9 +192,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_getpubnames.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_getmacros.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_getlocation_implicit_pointer.c">
@@ -231,12 +210,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_getelf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_getcfi_elf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_getcfi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_getattrs.c">
@@ -273,15 +246,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_func_inline.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_frame_register.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_frame_info.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_frame_cfa.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dwarf_formudata.c">
@@ -362,12 +326,6 @@
     <ClCompile Include="dwarf_child.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dwarf_cfi_end.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dwarf_cfi_addrframe.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dwarf_bytesize.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -404,10 +362,7 @@
     <ClCompile Include="dwarf_abbrev_hash.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cie.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cfi.c">
+    <ClCompile Include="dwarf_sig8_hash.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

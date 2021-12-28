@@ -15,15 +15,6 @@
     <ClInclude Include="bpf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dynamicsizehash.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dynamicsizehash_concurrent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eu-config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,6 +36,14 @@
     <ClInclude Include="system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="win\tsearch_path.h" />
+    <ClInclude Include="win\win-stdatomic.h" />
+    <ClInclude Include="dynamicsizehash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamicsizehash.impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="crc32.c">
@@ -62,9 +61,6 @@
     <ClCompile Include="printversion.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xasprintf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="xmalloc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -74,11 +70,13 @@
     <ClCompile Include="xstrndup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win-pread.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win-mman.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="win\win-misc.c" />
+    <ClCompile Include="win\win-mman.c" />
+    <ClCompile Include="win\win-pread.c" />
+    <ClCompile Include="win\win-stdatomic.c" />
+    <ClCompile Include="win\win-stpcpy.c" />
+    <ClCompile Include="win\win-tdestroy.c" />
+    <ClCompile Include="win\win-tfind.c" />
+    <ClCompile Include="win\win-tsearch.c" />
   </ItemGroup>
 </Project>

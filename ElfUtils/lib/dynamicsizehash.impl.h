@@ -212,7 +212,7 @@ INSERT(NAME) (NAME *htab, HASHTYPE hval, TYPE data)
   size_t idx;
 
   /* Make the hash value nonzero.  */
-  hval = hval ?: 1;
+  hval = hval ? hval : 1;
 
   idx = lookup (htab, hval, data);
 
@@ -256,7 +256,7 @@ FIND(NAME) (NAME *htab, HASHTYPE hval, TYPE val)
   size_t idx;
 
   /* Make the hash value nonzero.  */
-  hval = hval ?: 1;
+  hval = hval ? hval : 1;
 
   idx = lookup (htab, hval, val);
 

@@ -166,6 +166,18 @@ namespace Mesen.GUI
 			public Dictionary<int, SourceSymbol> SymbolsByCpuAddress;
 		}
 
+		private static string[] ReadAllLinesOrEmpty(string filePath)
+		{
+			try
+			{
+				return File.ReadAllLines(filePath, Encoding.UTF8);
+			}
+			catch (Exception)
+			{
+				return new string[0];
+			}
+		}
+
 		public static DwarfInfo? GetDwarfInfo()
 		{
 			List<ElfSec> secs = new List<ElfSec>();
@@ -196,7 +208,7 @@ namespace Mesen.GUI
 					files.Add(new SourceFileInfo
 					{
 						Name = filePath,
-						Data = File.ReadAllLines(filePath, Encoding.UTF8)
+						Data = ReadAllLinesOrEmpty(filePath)
 					});
 				},
 				(UInt32 fileIdx, UInt32 line, UInt32 addr) =>

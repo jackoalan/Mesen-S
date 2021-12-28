@@ -44,6 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dwarf.h" />
+    <ClInclude Include="dwarf_abbrev_hash.h" />
+    <ClInclude Include="dwarf_sig8_hash.h" />
     <ClInclude Include="encoded-value.h" />
     <ClInclude Include="libdw.h" />
     <ClInclude Include="libdwP.h" />
@@ -51,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dwarf_abbrevhaschildren.c" />
+    <ClCompile Include="dwarf_abbrev_hash.c" />
     <ClCompile Include="dwarf_addrdie.c" />
     <ClCompile Include="dwarf_aggregate_size.c" />
     <ClCompile Include="dwarf_arrayorder.c" />
@@ -150,6 +153,7 @@
     <ClCompile Include="dwarf_ranges.c" />
     <ClCompile Include="dwarf_setalt.c" />
     <ClCompile Include="dwarf_siblingof.c" />
+    <ClCompile Include="dwarf_sig8_hash.c" />
     <ClCompile Include="dwarf_srclang.c" />
     <ClCompile Include="dwarf_tag.c" />
     <ClCompile Include="dwarf_whatattr.c" />
