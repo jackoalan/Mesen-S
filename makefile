@@ -135,7 +135,7 @@ ElfUtils/libdw/$(OBJFOLDER)/%.o: ElfUtils/libdw/%.c
 ZLib/$(OBJFOLDER)/%.o: ZLib/%.c
 	mkdir -p ZLib/$(OBJFOLDER) && cd ZLib/$(OBJFOLDER) && $(CC) $(CCOPTIONS) -c $(patsubst ZLib/%, ../%, $<)
 Utilities/$(OBJFOLDER)/%.o: Utilities/%.cpp
-	mkdir -p Utilities/$(OBJFOLDER) && cd Utilities/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -I../../ElfUtils -I../../ElfUtils/libdw -c $(patsubst Utilities/%, ../%, $<)
+	mkdir -p Utilities/$(OBJFOLDER) && cd Utilities/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -I../../ElfUtils -I../../ElfUtils/libdw -I../../ElfUtils/libelf -c $(patsubst Utilities/%, ../%, $<)
 Utilities/$(OBJFOLDER)/%.o: Utilities/HQX/%.cpp
 	mkdir -p Utilities/$(OBJFOLDER) && cd Utilities/$(OBJFOLDER) && $(CPPC) $(GCCOPTIONS) -c $(patsubst Utilities/%, ../%, $<)
 Utilities/$(OBJFOLDER)/%.o: Utilities/xBRZ/%.cpp
