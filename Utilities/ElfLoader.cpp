@@ -187,10 +187,25 @@ public:
 			flags |= CartFlags::ExLoRom;
 		}
 
+		// Section VMAs translated into LMAs to determine PRG ROM address.
+		// This is partly how a linker in raw binary output mode determines file offsets.
+		size_t phdr_num = 0;
+		elf_getphdrnum(_elf, &phdr_num);
+		auto getLMA = [this, phdr_num](Elf64_Addr addr) {
+			for (size_t i = 0; i < phdr_num; ++i) {
+				GElf_Phdr phdr_mem;
+				GElf_Phdr* phdr = gelf_getphdr(_elf, i, &phdr_mem);
+				if (phdr && phdr->p_type == PT_LOAD && phdr->p_vaddr <= addr &&
+					phdr->p_vaddr + phdr->p_memsz > addr)
+					return addr - phdr->p_vaddr + phdr->p_paddr;
+			}
+			return addr;
+		};
+
 		vector<uint8_t> binData;
 
 		EnumerateSections(
-			[flags, &binData](Elf_Scn *scn, GElf_Shdr *shdr,
+			[flags, &binData, &getLMA](Elf_Scn *scn, GElf_Shdr *shdr,
 									GElf_Section secidx) {
 				if (!(shdr->sh_flags & SHF_ALLOC) || shdr->sh_type == SHT_NOBITS)
 					return true;
@@ -198,7 +213,7 @@ public:
 				Elf_Data *data = elf_getdata(scn, nullptr);
 				auto *cur = (uint8_t *) data->d_buf;
 				int remLen = (int) data->d_size;
-				Elf64_Addr inCompAddr = shdr->sh_addr + data->d_off;
+				Elf64_Addr inCompAddr = getLMA(shdr->sh_addr);
 
 				auto advance = [&](int amt) {
 					cur += amt;
