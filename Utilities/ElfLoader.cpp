@@ -166,6 +166,23 @@ public:
 				 ? (SnesCartInformation *) data->d_buf : nullptr;
 	}
 
+	const char *GetSfcElfPath() {
+		Elf_Data *data = nullptr;
+		EnumerateSections(
+			[this, &data](Elf_Scn *scn, GElf_Shdr *shdr, GElf_Section secidx) {
+				if (shdr->sh_flags & SHF_ALLOC)
+					return true;
+
+				const char *sname = StrPtr(shdr->sh_name);
+				if (!strcmp(sname, ".spc.elf")) {
+					data = elf_getdata(scn, nullptr);
+					return false;
+				}
+				return true;
+			});
+		return data && data->d_size ? (const char*)data->d_buf : nullptr;
+	}
+
 	vector<uint8_t> ToBinary() {
 		if (!IsValid())
 			return {};
@@ -321,7 +338,7 @@ public:
 			});
 	};
 
-	bool GetDwarfInfo(GetDwarfInfoArgs args) {
+	bool GetDwarfInfo(GetDwarfInfoArgsCb args) {
 		if (!IsValid())
 			return false;
 
@@ -411,5 +428,11 @@ vector<uint8_t> ElfLoader::ToBinary() const {
 
 bool ElfLoader::GetDwarfInfo(GetDwarfInfoArgs args) const {
 	ElfContext ctx(_filename.c_str(), true);
-	return ctx.GetDwarfInfo(args);
+	if (!ctx.GetDwarfInfo(args.main))
+		return false;
+	if (const char *spc_elf_filename = ctx.GetSfcElfPath()) {
+		ElfContext spc_ctx(spc_elf_filename, true);
+		spc_ctx.GetDwarfInfo(args.spc);
+	}
+	return true;
 }

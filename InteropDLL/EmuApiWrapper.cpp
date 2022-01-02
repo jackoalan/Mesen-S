@@ -299,8 +299,14 @@ extern "C" {
 							 GetDwarfInfoAppendSecCallback appendSecCb,
 							 GetDwarfInfoAppendFileCallback appendFileCb,
 							 GetDwarfInfoAppendLocCallback appendLocCb,
-							 GetDwarfInfoAppendSymCallback appendSymCb) {
-		return _console->GetDwarfInfo({countCb, appendSecCb, appendFileCb, appendLocCb, appendSymCb})
+							 GetDwarfInfoAppendSymCallback appendSymCb,
+							 GetDwarfInfoObjectCountCallback spcCountCb,
+							 GetDwarfInfoAppendSecCallback spcAppendSecCb,
+							 GetDwarfInfoAppendFileCallback spcAppendFileCb,
+							 GetDwarfInfoAppendLocCallback spcAppendLocCb,
+							 GetDwarfInfoAppendSymCallback spcAppendSymCb) {
+		return _console->GetDwarfInfo({{countCb, appendSecCb, appendFileCb, appendLocCb, appendSymCb},
+																	 {spcCountCb, spcAppendSecCb, spcAppendFileCb, spcAppendLocCb, spcAppendSymCb}})
 					 ? 1 : 0;
 	}
 

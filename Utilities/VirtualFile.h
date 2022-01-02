@@ -8,12 +8,17 @@ typedef void(__cdecl *GetDwarfInfoAppendFileCallback)(const char *filePath);
 typedef void(__cdecl *GetDwarfInfoAppendLocCallback)(uint32_t fileIdx, uint32_t line, uint32_t addr);
 typedef void(__cdecl *GetDwarfInfoAppendSymCallback)(const char *namePtr, uint32_t secIdx, uint32_t addr, uint32_t size);
 
-struct GetDwarfInfoArgs {
+struct GetDwarfInfoArgsCb {
 	GetDwarfInfoObjectCountCallback countCb;
 	GetDwarfInfoAppendSecCallback appendSecCb;
 	GetDwarfInfoAppendFileCallback appendFileCb;
 	GetDwarfInfoAppendLocCallback appendLocCb;
 	GetDwarfInfoAppendSymCallback appendSymCb;
+};
+
+struct GetDwarfInfoArgs {
+	GetDwarfInfoArgsCb main;
+	GetDwarfInfoArgsCb spc;
 };
 
 class VirtualFile

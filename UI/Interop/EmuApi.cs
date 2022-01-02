@@ -140,7 +140,12 @@ namespace Mesen.GUI
 			GetDwarfInfoAppendSecCallback appendSecCb,
 			GetDwarfInfoAppendFileCallback appendFileCb,
 			GetDwarfInfoAppendLocCallback appendLocCb,
-			GetDwarfInfoAppendSymCallback appendSymCb);
+			GetDwarfInfoAppendSymCallback appendSymCb,
+			GetDwarfInfoObjectCountCallback sfcCountCb,
+			GetDwarfInfoAppendSecCallback sfcAppendSecCb,
+			GetDwarfInfoAppendFileCallback sfcAppendFileCb,
+			GetDwarfInfoAppendLocCallback sfcAppendLocCb,
+			GetDwarfInfoAppendSymCallback sfcAppendSymCb);
 
 
 		public struct ElfSec
