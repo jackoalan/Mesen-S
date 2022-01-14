@@ -46,7 +46,7 @@ namespace Mesen.GUI.Debugger.Integration
 			return null;
 		}
 
-		public SourceSymbol GetSymbol(string word, int prgStartAddress, int prgEndAddress)
+		public SourceSymbol GetSymbol(CpuType cpuType, string word, int prgStartAddress, int prgEndAddress)
 		{
 			return null;
 		}

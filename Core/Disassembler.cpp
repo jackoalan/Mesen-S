@@ -27,11 +27,12 @@
 #include "../Utilities/HexUtilities.h"
 #include "../Utilities/StringUtilities.h"
 
-Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, Debugger* debugger)
+Disassembler::Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, shared_ptr<CodeDataLogger> spcCdl, Debugger* debugger)
 {
 	shared_ptr<BaseCartridge> cart = console->GetCartridge();
 
 	_cdl = cdl;
+	_spcCdl = spcCdl;
 	_debugger = debugger;
 	_labelManager = debugger->GetLabelManager();
 	_console = console.get();
@@ -133,8 +134,10 @@ void Disassembler::SetDisassembleFlag(CpuType type)
 void Disassembler::ResetPrgCache()
 {
 	InitSource(SnesMemoryType::PrgRom);
+	InitSource(SnesMemoryType::SpcRam);
 	InitSource(SnesMemoryType::GbPrgRom);
 	_needDisassemble[(int)CpuType::Cpu] = true;
+	_needDisassemble[(int)CpuType::Spc] = true;
 	_needDisassemble[(int)CpuType::Sa1] = true;
 	_needDisassemble[(int)CpuType::Gsu] = true;
 	_needDisassemble[(int)CpuType::Cx4] = true;
@@ -258,8 +261,10 @@ void Disassembler::Disassemble(CpuType cpuType)
 		uint8_t opSize = 0;
 		uint8_t opCode = (src.Data + addrInfo.Address)[0];
 
-		bool isCode = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsCode(addrInfo.Address) : false;
-		bool isData = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsData(addrInfo.Address) : false;
+		bool isCode = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsCode(addrInfo.Address) :
+							addrInfo.Type == SnesMemoryType::SpcRam ? _spcCdl->IsCode(addrInfo.Address) : false;
+		bool isData = addrInfo.Type == SnesMemoryType::PrgRom ? _cdl->IsData(addrInfo.Address) :
+							addrInfo.Type == SnesMemoryType::SpcRam ? _spcCdl->IsData(addrInfo.Address) : false;
 
 		if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
@@ -276,7 +281,8 @@ void Disassembler::Disassemble(CpuType cpuType)
 			}
 			byteCounter = 0;
 
-			if(addrInfo.Type == SnesMemoryType::PrgRom && _cdl->IsSubEntryPoint(addrInfo.Address)) {
+			if((addrInfo.Type == SnesMemoryType::PrgRom && _cdl->IsSubEntryPoint(addrInfo.Address)) ||
+				(addrInfo.Type == SnesMemoryType::SpcRam && _spcCdl->IsSubEntryPoint(addrInfo.Address))) {
 				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
 			}
 
@@ -501,7 +507,7 @@ bool Disassembler::GetLineData(CpuType type, uint32_t lineIndex, CodeLineData &d
 						if(!disInfo.IsInitialized()) {
 							disInfo = DisassemblyInfo(src.Data + result.Address.Address, 0, CpuType::Spc);
 						} else {
-							data.Flags |= LineFlags::VerifiedCode;
+							data.Flags |= (result.Address.Type != SnesMemoryType::SpcRam || _spcCdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 						}
 
 						data.OpSize = disInfo.GetOpSize();

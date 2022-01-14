@@ -63,7 +63,7 @@ namespace Mesen.GUI.Debugger.Code
 			if(_provider is SymbolCodeDataProvider && _symbolProvider != null) {
 				int rangeStart, rangeEnd;
 				GetSymbolByteRange(lineIndex, out rangeStart, out rangeEnd);
-				location.Symbol = _symbolProvider.GetSymbol(word, rangeStart, rangeEnd);
+				location.Symbol = _symbolProvider.GetSymbol(this.CpuType, word, rangeStart, rangeEnd);
 			}
 
 			location.Label = LabelManager.GetLabel(word);

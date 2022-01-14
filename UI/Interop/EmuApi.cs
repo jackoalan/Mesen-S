@@ -159,12 +159,11 @@ namespace Mesen.GUI
 		{
 			public ElfSec Section;
 			public int Size;
+			public bool Spc;
 		}
-		
-		public struct DwarfInfo
+
+		public struct DwarfModuleInfo
 		{
-			public DateTime SymbolFileStamp;
-			public string SymbolPath;
 			public List<ElfSec> Sections;
 			public List<SourceFileInfo> SourceFiles;
 			public Dictionary<int, SourceCodeLocation> LinesByCpuAddress;
@@ -184,31 +183,48 @@ namespace Mesen.GUI
 			}
 		}
 
-		public static DwarfInfo? GetDwarfInfo()
+		internal class DebugInfoCollector
 		{
 			List<ElfSec> secs = new List<ElfSec>();
 			List<SourceFileInfo> files = new List<SourceFileInfo>();
 			Dictionary<int, SourceCodeLocation> locs = new Dictionary<int, SourceCodeLocation>();
 			Dictionary<int, SourceSymbol> syms = new Dictionary<int, SourceSymbol>();
 
-			if (GetDwarfInfoWrapper((UInt32 numSecs, UInt32 numFiles, UInt32 numLocs, UInt32 numSyms) =>
+			private bool spc;
+
+			internal DebugInfoCollector(bool spcIn)
+			{
+				spc = spcIn;
+			}
+
+			public GetDwarfInfoObjectCountCallback CountCb()
+			{
+				return (UInt32 numSecs, UInt32 numFiles, UInt32 numLocs, UInt32 numSyms) =>
 				{
-					secs = new List<ElfSec>((int) numSecs);
-					files = new List<SourceFileInfo>((int) numFiles);
-					locs = new Dictionary<int, SourceCodeLocation>((int) numLocs);
-					syms = new Dictionary<int, SourceSymbol>((int) numSyms);
-				},
-				(IntPtr secNamePtr, UInt32 addr, UInt32 size) =>
+					secs = new List<ElfSec>((int)numSecs);
+					files = new List<SourceFileInfo>((int)numFiles);
+					locs = new Dictionary<int, SourceCodeLocation>((int)numLocs);
+					syms = new Dictionary<int, SourceSymbol>((int)numSyms);
+				};
+			}
+
+			public GetDwarfInfoAppendSecCallback AppendSecCb()
+			{
+				return (IntPtr secNamePtr, UInt32 addr, UInt32 size) =>
 				{
 					string secName = Utf8Marshaler.GetStringFromIntPtr(secNamePtr);
 					secs.Add(new ElfSec
 					{
 						Name = secName,
-						Address = (int) addr,
-						Size = (int) size
+						Address = (int)addr,
+						Size = (int)size
 					});
-				},
-				(IntPtr filePathPtr) =>
+				};
+			}
+
+			public GetDwarfInfoAppendFileCallback AppendFileCb()
+			{
+				return (IntPtr filePathPtr) =>
 				{
 					string filePath = Utf8Marshaler.GetStringFromIntPtr(filePathPtr);
 					files.Add(new SourceFileInfo
@@ -216,38 +232,83 @@ namespace Mesen.GUI
 						Name = filePath,
 						Data = ReadSourceFileOrEmpty(filePath)
 					});
-				},
-				(UInt32 fileIdx, UInt32 line, UInt32 addr) =>
-				{
-					locs[(int) addr] = new SourceCodeLocation
-					{
-						File = files[(int) fileIdx],
-						LineNumber = Math.Max(0, (int) line - 1)
-					};
-				},
-				(IntPtr namePtr, UInt32 secIdx, UInt32 addr, UInt32 size) =>
-				{
-					syms[(int) addr] = new SourceSymbol
-					{
-						Name = Utf8Marshaler.GetStringFromIntPtr(namePtr),
-						Address = (int) addr,
-						InternalSymbol = new ElfSymData{Section = secs[(int) secIdx], Size = (int) size}
-					};
-				}) == 1)
+				};
+			}
+
+			public GetDwarfInfoAppendLocCallback AppendLocCb()
 			{
-				string path = GetRomInfo().RomPath;
-				return new DwarfInfo
+				return (UInt32 fileIdx, UInt32 line, UInt32 addr) =>
 				{
-					SymbolFileStamp = File.GetLastWriteTime(path),
-					SymbolPath = path,
+					locs[(int)addr] = new SourceCodeLocation
+					{
+						File = files[(int)fileIdx],
+						LineNumber = Math.Max(0, (int)line - 1)
+					};
+				};
+			}
+
+			public GetDwarfInfoAppendSymCallback AppendSymCb()
+			{
+				return (IntPtr namePtr, UInt32 secIdx, UInt32 addr, UInt32 size) =>
+				{
+					string name = Utf8Marshaler.GetStringFromIntPtr(namePtr);
+					syms[(int)addr] = new SourceSymbol
+					{
+						// TODO: Modify the label manager to handle this out of band
+						Name = spc ? "spc_" + name : name,
+						Address = (int)addr,
+						InternalSymbol = new ElfSymData { Section = secs[(int)secIdx], Size = (int)size, Spc = spc }
+					};
+				};
+			}
+
+			public DwarfModuleInfo Finish()
+			{
+				return new DwarfModuleInfo
+				{
 					Sections = secs,
 					SourceFiles = files,
 					LinesByCpuAddress = locs,
 					SymbolsByCpuAddress = syms
 				};
 			}
-			else
+		}
+
+		public struct DwarfInfo
+		{
+			public DateTime SymbolFileStamp;
+			public string SymbolPath;
+
+			public DwarfModuleInfo Cpu;
+			public DwarfModuleInfo Spc;
+
+			internal DwarfInfo(string path, DebugInfoCollector cpuCollector, DebugInfoCollector spcCollector)
 			{
+				SymbolFileStamp = File.GetLastWriteTime(path);
+				SymbolPath = path;
+				Cpu = cpuCollector.Finish();
+				Spc = spcCollector.Finish();
+			}
+		}
+
+		public static DwarfInfo? GetDwarfInfo()
+		{
+			DebugInfoCollector cpuCollector = new DebugInfoCollector(false);
+			DebugInfoCollector spcCollector = new DebugInfoCollector(true);
+
+			if (GetDwarfInfoWrapper(
+				    cpuCollector.CountCb(),
+				    cpuCollector.AppendSecCb(),
+				    cpuCollector.AppendFileCb(),
+				    cpuCollector.AppendLocCb(),
+				    cpuCollector.AppendSymCb(),
+				    spcCollector.CountCb(),
+				    spcCollector.AppendSecCb(),
+				    spcCollector.AppendFileCb(),
+				    spcCollector.AppendLocCb(),
+				    spcCollector.AppendSymCb()) == 1) {
+				return new DwarfInfo(GetRomInfo().RomPath, cpuCollector, spcCollector);
+			} else {
 				return null;
 			}
 		}

@@ -70,6 +70,7 @@ private:
 	shared_ptr<MemoryDumper> _memoryDumper;
 	shared_ptr<MemoryAccessCounter> _memoryAccessCounter;
 	shared_ptr<CodeDataLogger> _codeDataLogger;
+	shared_ptr<CodeDataLogger> _spcCodeDataLogger;
 	shared_ptr<Disassembler> _disassembler;
 	shared_ptr<PpuTools> _ppuTools;
 	shared_ptr<LabelManager> _labelManager;

@@ -225,7 +225,7 @@ namespace Mesen.GUI.Debugger.Integration
 			return _symbols.Values.Select(s => s.SourceSymbol).ToList();
 		}
 
-		public SourceSymbol GetSymbol(string word, int prgStartAddress, int prgEndAddress)
+		public SourceSymbol GetSymbol(CpuType cpuType, string word, int prgStartAddress, int prgEndAddress)
 		{
 			try {
 				foreach(CSymbolInfo symbol in _cSymbols.Values) {

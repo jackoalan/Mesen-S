@@ -137,7 +137,7 @@ public:
 		if (!IsValid())
 			return;
 
-		GElf_Section secidx = 0;
+		GElf_Section secidx = 1;
 		Elf_Scn *scn = nullptr;
 		while ((scn = elf_nextscn(_elf, scn)) != nullptr) {
 			GElf_Shdr shdr_mem;

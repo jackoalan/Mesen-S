@@ -73,8 +73,9 @@ Debugger::Debugger(shared_ptr<Console> console)
 	_watchExpEval[(int)CpuType::Gameboy].reset(new ExpressionEvaluator(this, CpuType::Gameboy));
 
 	_codeDataLogger.reset(new CodeDataLogger(_cart->DebugGetPrgRomSize(), CpuType::Cpu));
+	_spcCodeDataLogger.reset(new CodeDataLogger(Spc::SpcRamSize, CpuType::Spc));
 	_memoryDumper.reset(new MemoryDumper(this));
-	_disassembler.reset(new Disassembler(console, _codeDataLogger, this));
+	_disassembler.reset(new Disassembler(console, _codeDataLogger, _spcCodeDataLogger, this));
 	_traceLogger.reset(new TraceLogger(this, _console));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this, console.get()));
 	_ppuTools.reset(new PpuTools(_console.get(), _ppu.get()));
@@ -659,6 +660,7 @@ void Debugger::RefreshCodeCache()
 {
 	_disassembler->ResetPrgCache();
 	RebuildPrgCache(CpuType::Cpu);
+	RebuildPrgCache(CpuType::Spc);
 	RebuildPrgCache(CpuType::Gameboy);
 }
 
@@ -671,7 +673,8 @@ void Debugger::RebuildPrgCache(CpuType cpuType)
 
 	uint32_t prgRomSize = cdl->GetPrgSize();
 	AddressInfo addrInfo;
-	addrInfo.Type = cpuType == CpuType::Gameboy ? SnesMemoryType::GbPrgRom : SnesMemoryType::PrgRom;
+	addrInfo.Type = cpuType == CpuType::Gameboy ? SnesMemoryType::GbPrgRom :
+		cpuType == CpuType::Spc ? SnesMemoryType::SpcRam : SnesMemoryType::PrgRom;
 
 	for(uint32_t i = 0; i < prgRomSize; i++) {
 		if(cdl->IsCode(i)) {
@@ -831,6 +834,8 @@ shared_ptr<CodeDataLogger> Debugger::GetCodeDataLogger(CpuType cpuType)
 {
 	if(cpuType == CpuType::Gameboy) {
 		return _gbDebugger ? _gbDebugger->GetCodeDataLogger() : nullptr;
+	} else if(cpuType == CpuType::Spc) {
+		return _spcCodeDataLogger;
 	} else {
 		return _codeDataLogger;
 	}

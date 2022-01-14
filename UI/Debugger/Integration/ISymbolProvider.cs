@@ -16,7 +16,7 @@ namespace Mesen.GUI.Debugger.Integration
 		SourceCodeLocation GetSourceCodeLineInfo(AddressInfo address);
 		AddressInfo? GetSymbolAddressInfo(SourceSymbol symbol);
 		SourceCodeLocation GetSymbolDefinition(SourceSymbol symbol);
-		SourceSymbol GetSymbol(string word, int prgStartAddress, int prgEndAddress);
+		SourceSymbol GetSymbol(CpuType cpuType, string word, int prgStartAddress, int prgEndAddress);
 		List<SourceSymbol> GetSymbols();
 		int GetSymbolSize(SourceSymbol srcSymbol);
 		//List<DbgImporter.ReferenceInfo> GetSymbolReferences(SourceSymbol symbol);

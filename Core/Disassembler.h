@@ -44,6 +44,7 @@ private:
 	EmuSettings* _settings;
 	Debugger *_debugger;
 	shared_ptr<CodeDataLogger> _cdl;
+	shared_ptr<CodeDataLogger> _spcCdl;
 	shared_ptr<LabelManager> _labelManager;
 	MemoryDumper *_memoryDumper;
 
@@ -59,7 +60,7 @@ private:
 	void SetDisassembleFlag(CpuType type);
 
 public:
-	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, Debugger* debugger);
+	Disassembler(shared_ptr<Console> console, shared_ptr<CodeDataLogger> cdl, shared_ptr<CodeDataLogger> spcCdl, Debugger* debugger);
 
 	uint32_t BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuType type);
 	void ResetPrgCache();
